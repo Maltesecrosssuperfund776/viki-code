@@ -18,11 +18,11 @@ It is built for serious engineering workflows: bug-fixes, refactors, migrations,
 
 <p align="center">
   <a href="https://rebootix-research.com/viki-code"><strong>Product Page</strong></a>
-  ·
+  |
   <a href="https://github.com/rebootix-research/viki-code"><strong>GitHub</strong></a>
-  ·
+  |
   <a href="./PROOF_REPORT.md"><strong>Proof Report</strong></a>
-  ·
+  |
   <a href="./RELEASE_NOTES.md"><strong>Release Notes</strong></a>
 </p>
 
@@ -76,11 +76,9 @@ The same execution stack powers:
 
 ## Product Page
 
-VIKI Code now also lives on the Rebootix site:
-
 - [https://rebootix-research.com/viki-code](https://rebootix-research.com/viki-code)
 
-The site is positioned as the public product surface for VIKI Code, while this repository remains the full engineering source, proof base, and release home.
+The Rebootix website source now includes a dedicated `/viki-code` product route, while this repository remains the full engineering source, proof base, and release home.
 
 ## Install
 
