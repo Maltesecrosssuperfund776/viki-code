@@ -1,7 +1,7 @@
 # VIKI Code
 
 <p align="center">
-  <img src="assets/logo/viki-code-banner.svg" alt="VIKI Code banner" width="100%" />
+  <img src="assets/logo/viki-code-banner.png" alt="VIKI Code banner" width="100%" />
 </p>
 
 <p align="center">
