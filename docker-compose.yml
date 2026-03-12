@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  viki:
+    build: .
+    volumes:
+      - .:/workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - .env
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: ["viki", "doctor"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    profiles:
+      - monitoring
+
+volumes:
+  grafana-storage:

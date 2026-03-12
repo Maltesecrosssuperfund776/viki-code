@@ -1,0 +1,13 @@
+name: create-hello
+prompt: create hello.txt with the text hello from benchmark
+fixture_dir: fixture
+dataset: public
+checks:
+  - type: file_exists
+    path: hello.txt
+  - type: file_contains
+    path: hello.txt
+    text: hello
+metadata:
+  track: public
+  repo: sample-public-repo

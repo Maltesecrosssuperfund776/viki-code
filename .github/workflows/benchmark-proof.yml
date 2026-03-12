@@ -1,0 +1,41 @@
+name: benchmark-proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      report_path:
+        description: 'Path to primary VIKI benchmark report JSON'
+        required: true
+        default: '.viki-workspace/benchmarks/latest_report.json'
+      baselines:
+        description: 'Comma-separated baseline specs name=path'
+        required: false
+        default: ''
+
+jobs:
+  publish-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -e .
+      - name: Build comparison board
+        shell: bash
+        run: |
+          BASELINE_ARGS=""
+          if [ -n "${{ github.event.inputs.baselines }}" ]; then
+            IFS=',' read -ra ITEMS <<< "${{ github.event.inputs.baselines }}"
+            for item in "${ITEMS[@]}"; do
+              BASELINE_ARGS+=" --baseline ${item}"
+            done
+            python -m viki.cli evals compare "${{ github.event.inputs.report_path }}" ${BASELINE_ARGS}
+            python -m viki.cli evals publish "${{ github.event.inputs.report_path }}" --comparison .viki-workspace/benchmarks/latest_comparison.json
+          else
+            python -m viki.cli evals publish "${{ github.event.inputs.report_path }}"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-proof-board
+          path: docs/benchmarks

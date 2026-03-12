@@ -1,0 +1,23 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="256" height="256" rx="48" fill="#040814"/>
+  <rect x="16" y="16" width="224" height="224" rx="32" fill="url(#panel)" stroke="url(#stroke)" stroke-width="2"/>
+  <path d="M64 190L104 72H132L96 190H64Z" fill="url(#accent)"/>
+  <path d="M130 190L170 72H198L162 190H130Z" fill="#F8FAFC"/>
+  <path d="M103 146L142 146" stroke="#60A5FA" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="198" cy="58" r="10" fill="#22C55E"/>
+  <circle cx="58" cy="198" r="8" fill="#38BDF8" fill-opacity="0.75"/>
+  <defs>
+    <linearGradient id="panel" x1="24" y1="24" x2="232" y2="232" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#07111F"/>
+      <stop offset="1" stop-color="#03060F"/>
+    </linearGradient>
+    <linearGradient id="stroke" x1="32" y1="32" x2="224" y2="224" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="72" y1="72" x2="148" y2="192" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38BDF8"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+</svg>

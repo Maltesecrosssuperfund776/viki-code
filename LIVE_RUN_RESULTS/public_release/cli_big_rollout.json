@@ -1,0 +1,47 @@
+{
+  "success": true,
+  "cli": {
+    "prepare_returncode": 0,
+    "prepare_stdout": "VIKI workspace ready at C:\\Users\\Nabeel \nSaleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\cli_\nbig_rollout_repo\\.viki-workspace\nDry run complete. Start with: viki up C:\\Users\\Nabeel \nSaleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\cli_\nbig_rollout_repo\n",
+    "prepare_stderr": "",
+    "returncode": 0,
+    "session_id": "20260312-035904",
+    "stdout": "{\"timestamp\": null, \"level\": null, \"name\": \"viki.infrastructure.observability\", \"message\": \"Metrics server started on port 9090\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"viki\", \"message\": \"docker unavailable | {\\\"error\\\": \\\"Error while fetching server API version: (2, 'CreateFile', 'The system cannot find the file specified.')\\\"}\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"viki\", \"message\": \"HiveMind initialized | {\\\"session\\\": \\\"20260312-035904\\\", \\\"workspace\\\": \\\"C:\\\\\\\\Users\\\\\\\\Nabeel Saleem\\\\\\\\Music\\\\\\\\viki_code_4_0_topline_upgrade\\\\\\\\LIVE_RUN_RESULTS\\\\\\\\public_release\\\\\\\\cli_big_rollout_repo\\\"}\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\nSession 20260312-035904\nStatus: completed\nChanged files:\n  - apps/api/service.py\n  - apps/cli/commands.py\n  - docs/auth.md\n  - packages/shared/auth.py\n",
+    "stderr": "\u001b[92m07:59:04 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m08:00:06 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m08:01:36 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m08:02:12 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m08:02:12 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m08:02:29 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n"
+  },
+  "validation": {
+    "pytest": {
+      "returncode": 0,
+      "stdout": "..                                                                       [100%]\n",
+      "stderr": ""
+    },
+    "auth": {
+      "path": "packages/shared/auth.py",
+      "exists": true,
+      "contains": {
+        "def normalize_account": true
+      }
+    },
+    "service": {
+      "path": "apps/api/service.py",
+      "exists": true,
+      "contains": {
+        "normalize_account": true
+      }
+    },
+    "cli": {
+      "path": "apps/cli/commands.py",
+      "exists": true,
+      "contains": {
+        "normalize_account": true
+      }
+    },
+    "docs": {
+      "path": "docs/auth.md",
+      "exists": true,
+      "contains": {
+        "normalize_account": true
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+name: matrix-bugfix
+prompt: fix the broken feature in this repo and make the relevant tests pass
+fixture_dir: fixture
+dataset: public
+checks:
+  - type: file_contains
+    path: pkg/feature_4.py
+    text: return value + 4
+  - type: command_exit_zero
+    command: python -m pytest --rootdir . tests/test_feature_1.py tests/test_feature_2.py tests/test_feature_3.py tests/test_feature_4.py -q
+metadata:
+  track: public
+  repo: matrix-bugfix-fixture
+  category: bugfix

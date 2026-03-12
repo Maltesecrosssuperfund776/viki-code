@@ -1,0 +1,19 @@
+name: repo-overview
+prompt: create REPO_OVERVIEW.md summarizing the key components in this repo and explicitly mention Python, TypeScript, and Go
+fixture_dir: fixture
+dataset: public
+checks:
+  - type: file_exists
+    path: REPO_OVERVIEW.md
+  - type: file_contains
+    path: REPO_OVERVIEW.md
+    text: Python
+  - type: file_contains
+    path: REPO_OVERVIEW.md
+    text: TypeScript
+  - type: file_contains
+    path: REPO_OVERVIEW.md
+    text: Go
+metadata:
+  track: public
+  repo: repo-overview-fixture

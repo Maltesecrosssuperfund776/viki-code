@@ -1,0 +1,14 @@
+{
+  "api_bugfix_success": true,
+  "api_multi_agent_success": true,
+  "cli_bugfix": true,
+  "cli_refactor": true,
+  "cli_migration": true,
+  "cli_repo_overview": true,
+  "cli_matrix_bugfix": true,
+  "cli_change_runbook": true,
+  "cli_big_rollout": true,
+  "generic_cli_success_count": 7,
+  "generic_cli_total": 7,
+  "output_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release"
+}

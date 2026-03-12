@@ -1,0 +1,10 @@
+name: internal-note
+prompt: create INTERNAL_NOTE.md with one line summary
+fixture_dir: fixture
+dataset: private
+checks:
+  - type: file_exists
+    path: INTERNAL_NOTE.md
+metadata:
+  track: private
+  repo: internal-sample-repo

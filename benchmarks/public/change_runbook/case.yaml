@@ -1,0 +1,39 @@
+name: change-runbook
+prompt: inspect this mixed repo, summarize what changed and what to run, and create CHANGE_RUNBOOK.md with explicit Python, TypeScript, and Go validation commands
+fixture_dir: fixture
+dataset: public
+checks:
+  - type: file_exists
+    path: CHANGE_RUNBOOK.md
+  - type: file_contains
+    path: CHANGE_RUNBOOK.md
+    text: Python
+  - type: file_contains
+    path: CHANGE_RUNBOOK.md
+    text: TypeScript
+  - type: file_contains
+    path: CHANGE_RUNBOOK.md
+    text: Go
+  - type: file_contains_any
+    path: CHANGE_RUNBOOK.md
+    texts:
+      - pytest -q
+      - python -m pytest -q
+      - python -c
+  - type: file_contains_any
+    path: CHANGE_RUNBOOK.md
+    texts:
+      - npm test
+      - npx ts-node
+      - tsc --noEmit
+      - npx tsx
+  - type: file_contains_any
+    path: CHANGE_RUNBOOK.md
+    texts:
+      - go test ./...
+      - go run go/cmd/server/main.go
+      - go build
+metadata:
+  track: public
+  repo: change-runbook-fixture
+  category: repo-intel

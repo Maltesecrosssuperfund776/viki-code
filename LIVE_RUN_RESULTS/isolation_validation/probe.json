@@ -1,0 +1,23 @@
+{
+  "docker": {
+    "available": false,
+    "detail": "docker command not found",
+    "executable": "",
+    "extra": {}
+  },
+  "podman": {
+    "available": false,
+    "detail": "podman command not found",
+    "executable": "",
+    "extra": {}
+  },
+  "wsl": {
+    "available": true,
+    "detail": "Python 3.12.3",
+    "executable": "C:\\WINDOWS\\system32\\wsl.exe",
+    "extra": {
+      "distro": "Ubuntu",
+      "python": "Python 3.12.3"
+    }
+  }
+}

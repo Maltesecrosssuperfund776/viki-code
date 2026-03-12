@@ -1,0 +1,13 @@
+name: generic-bugfix
+prompt: fix the multiply bug in this repo, run the relevant tests, and stop with evidence if confidence is too low
+fixture_dir: fixture
+dataset: public
+checks:
+  - type: file_contains
+    path: app/calculator.py
+    text: return a * b
+  - type: command_exit_zero
+    command: python -m pytest --rootdir . tests/test_calculator.py -q
+metadata:
+  track: public
+  repo: generic-bugfix-fixture

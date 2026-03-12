@@ -1,0 +1,23 @@
+name: monorepo-rollout
+prompt: roll out the new account normalization naming across this monorepo, preserve behavior, update the docs that still mention the old helper, and run the relevant tests
+fixture_dir: fixture
+dataset: public
+checks:
+  - type: file_contains
+    path: packages/shared/auth.py
+    text: def normalize_account
+  - type: file_contains
+    path: apps/api/service.py
+    text: normalize_account
+  - type: file_contains
+    path: apps/cli/commands.py
+    text: normalize_account
+  - type: file_contains
+    path: docs/auth.md
+    text: normalize_account
+  - type: command_exit_zero
+    command: python -m pytest --rootdir . tests/test_service.py tests/test_cli.py -q
+metadata:
+  track: public
+  repo: monorepo-rollout-fixture
+  category: multi-agent

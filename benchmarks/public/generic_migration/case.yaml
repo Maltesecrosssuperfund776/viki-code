@@ -1,0 +1,13 @@
+name: generic-migration
+prompt: migrate this repo off legacy_sum to the new API, preserve behavior, and run the targeted validation
+fixture_dir: fixture
+dataset: public
+checks:
+  - type: file_contains
+    path: consumer.py
+    text: sum_numbers
+  - type: command_exit_zero
+    command: python -m pytest --rootdir . tests/test_consumer.py -q
+metadata:
+  track: public
+  repo: generic-migration-fixture

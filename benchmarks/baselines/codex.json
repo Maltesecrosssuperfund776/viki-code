@@ -1,0 +1,13 @@
+{
+  "agent": "Codex",
+  "summary": {
+    "agent": "Codex",
+    "total": 2,
+    "passed": 1,
+    "task_completion_rate": 0.5,
+    "pass_at_1": 0.5,
+    "median_time_to_green": 3.6,
+    "security_approval_incidents": 1,
+    "revert_rate": 0.0
+  }
+}

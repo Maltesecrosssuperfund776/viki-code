@@ -1,0 +1,13 @@
+{
+  "runtime": "wsl",
+  "distro": "Ubuntu",
+  "wheel": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\dist\\viki_code-4.1.4-py3-none-any.whl",
+  "install_strategy": "user-site-bootstrap",
+  "success": true,
+  "copy_ok": true,
+  "version_ok": true,
+  "up_ok": true,
+  "live_task_ok": true,
+  "external_pytest_ok": true,
+  "file_contains_expected_fix": true
+}

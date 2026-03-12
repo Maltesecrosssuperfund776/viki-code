@@ -1,0 +1,16 @@
+name: generic-refactor
+prompt: refactor normalize_user usage safely across the repo by introducing a normalize_account wrapper, preserving behavior, and running the targeted tests
+fixture_dir: fixture
+dataset: public
+checks:
+  - type: file_contains
+    path: packages/shared/auth.py
+    text: def normalize_account
+  - type: file_contains
+    path: apps/api/service.py
+    text: normalize_account
+  - type: command_exit_zero
+    command: python -m pytest --rootdir . tests/test_service.py -q
+metadata:
+  track: public
+  repo: generic-refactor-fixture

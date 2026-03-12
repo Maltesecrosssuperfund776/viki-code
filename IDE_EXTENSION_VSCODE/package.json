@@ -1,0 +1,82 @@
+{
+  "name": "viki-code-assistant",
+  "displayName": "VIKI Code Assistant",
+  "version": "0.2.0",
+  "publisher": "rebootix",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "activationEvents": [
+    "onCommand:viki.submitTask",
+    "onCommand:viki.refreshSessions",
+    "onCommand:viki.taskStatus",
+    "onCommand:viki.previewDiff",
+    "onCommand:viki.approveChange",
+    "onCommand:viki.rejectChange",
+    "onCommand:viki.repoSearch",
+    "onCommand:viki.symbolLookup",
+    "onCommand:viki.showLogs"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "viki",
+          "title": "VIKI",
+          "icon": "media/viki.svg"
+        }
+      ]
+    },
+    "views": {
+      "viki": [
+        {
+          "id": "vikiSessions",
+          "name": "Sessions"
+        },
+        {
+          "id": "vikiApprovals",
+          "name": "Approvals"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "viki.submitTask",
+        "title": "VIKI: Submit Task"
+      },
+      {
+        "command": "viki.refreshSessions",
+        "title": "VIKI: Refresh Sessions"
+      },
+      {
+        "command": "viki.taskStatus",
+        "title": "VIKI: Task Status"
+      },
+      {
+        "command": "viki.previewDiff",
+        "title": "VIKI: Preview Diff"
+      },
+      {
+        "command": "viki.approveChange",
+        "title": "VIKI: Approve Change"
+      },
+      {
+        "command": "viki.rejectChange",
+        "title": "VIKI: Reject Change"
+      },
+      {
+        "command": "viki.repoSearch",
+        "title": "VIKI: Repo Search"
+      },
+      {
+        "command": "viki.symbolLookup",
+        "title": "VIKI: Symbol Lookup"
+      },
+      {
+        "command": "viki.showLogs",
+        "title": "VIKI: Show Logs"
+      }
+    ]
+  }
+}

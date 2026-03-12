@@ -1,0 +1,15 @@
+{
+  "wheel": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\dist\\viki_code-4.1.4-py3-none-any.whl",
+  "installed_entrypoint": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\human_install\\venv\\Scripts\\viki.exe",
+  "task_repo": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\human_install\\installed_task_repo",
+  "success": true,
+  "help_ok": true,
+  "version_ok": true,
+  "doctor_ok": true,
+  "dry_run_ok": true,
+  "live_task_ok": true,
+  "external_pytest_ok": true,
+  "update_ok": true,
+  "uninstall_ok": true,
+  "file_contains_expected_fix": true
+}

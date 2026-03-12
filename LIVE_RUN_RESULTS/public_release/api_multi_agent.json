@@ -1,0 +1,1175 @@
+{
+  "http_status": 200,
+  "payload": {
+    "run": {
+      "session_id": "20260312-034341",
+      "status": "completed",
+      "request": "Refactor normalize_user usage safely across the repo by introducing a normalize_account wrapper, preserving behavior, and running the targeted tests.",
+      "branch": "viki-20260312-034341",
+      "plan": {
+        "goal": "Refactor normalize_user usage safely across the repo by introducing a normalize_account wrapper, preserving behavior, and running the targeted tests.",
+        "summary": "Introduce normalize_account wrapper in auth.py, update service.py to use the new wrapper, and verify correctness via pytest.",
+        "tasks": [
+          {
+            "id": "task-1",
+            "title": "Implement normalize_account wrapper and update usages",
+            "objective": "Add normalize_account function wrapping normalize_user in auth.py and replace normalize_user calls with normalize_account in service.py",
+            "target_files": [
+              "packages/shared/auth.py",
+              "apps/api/service.py"
+            ],
+            "deliverables": [
+              "Updated packages/shared/auth.py with normalize_account function",
+              "Updated apps/api/service.py using normalize_account"
+            ],
+            "commands": [],
+            "skill_requests": [
+              {
+                "name": "read_file",
+                "description": "Read packages/shared/auth.py to understand normalize_user implementation and apps/api/service.py to find usage sites"
+              },
+              {
+                "name": "write_file",
+                "description": "Write updated auth.py adding normalize_account wrapper and service.py updating imports and calls to use normalize_account"
+              }
+            ],
+            "subtasks": []
+          },
+          {
+            "id": "task-2",
+            "title": "Run targeted tests to verify behavior",
+            "objective": "Execute pytest to ensure refactor did not break existing functionality",
+            "target_files": [
+              "tests/test_service.py"
+            ],
+            "deliverables": [
+              "Test execution results confirming pass status"
+            ],
+            "commands": [
+              {
+                "command": "pytest -q",
+                "timeout": 120
+              }
+            ],
+            "skill_requests": [],
+            "subtasks": []
+          }
+        ],
+        "testing_commands": [
+          {
+            "command": "pytest -q",
+            "timeout": 120
+          }
+        ],
+        "acceptance_criteria": [
+          "normalize_account function exists in packages/shared/auth.py and wraps normalize_user",
+          "apps/api/service.py uses normalize_account instead of normalize_user",
+          "All tests in tests/test_service.py pass without errors"
+        ]
+      },
+      "tasks": [
+        {
+          "id": "task-1",
+          "title": "Implement normalize_account wrapper and update usages",
+          "objective": "Add normalize_account function wrapping normalize_user in auth.py and replace normalize_user calls with normalize_account in service.py",
+          "target_files": [
+            "packages/shared/auth.py",
+            "apps/api/service.py",
+            "auth.py",
+            "service.py",
+            "tests/test_service.py"
+          ],
+          "deliverables": [
+            "Updated packages/shared/auth.py with normalize_account function",
+            "Updated apps/api/service.py using normalize_account"
+          ],
+          "commands": [
+            {
+              "command": "pytest -q",
+              "timeout": 120
+            }
+          ],
+          "skill_requests": [
+            {
+              "name": "read_file",
+              "description": "Read packages/shared/auth.py to understand normalize_user implementation and apps/api/service.py to find usage sites"
+            },
+            {
+              "name": "write_file",
+              "description": "Write updated auth.py adding normalize_account wrapper and service.py updating imports and calls to use normalize_account"
+            }
+          ],
+          "depth": 0
+        }
+      ],
+      "routes": [
+        {
+          "task_id": "task-1",
+          "lane": "refactor",
+          "model": "reasoning",
+          "isolation": "sandboxed-worktree",
+          "test_strategy": "full",
+          "repair_focus": "policy-first",
+          "parallel_safe": false,
+          "cost_tier": "high-confidence",
+          "rationale": [
+            "structural code change",
+            "testing-heavy task",
+            "infrastructure-sensitive task",
+            "security-sensitive task",
+            "large-repo planning bias",
+            "wide structural change"
+          ]
+        }
+      ],
+      "task_results": [
+        {
+          "task": {
+            "id": "task-1",
+            "title": "Implement normalize_account wrapper and update usages",
+            "objective": "Add normalize_account function wrapping normalize_user in auth.py and replace normalize_user calls with normalize_account in service.py",
+            "target_files": [
+              "packages/shared/auth.py",
+              "apps/api/service.py",
+              "auth.py",
+              "service.py",
+              "tests/test_service.py"
+            ],
+            "deliverables": [
+              "Updated packages/shared/auth.py with normalize_account function",
+              "Updated apps/api/service.py using normalize_account"
+            ],
+            "commands": [
+              {
+                "command": "pytest -q",
+                "timeout": 120
+              }
+            ],
+            "skill_requests": [
+              {
+                "name": "read_file",
+                "description": "Read packages/shared/auth.py to understand normalize_user implementation and apps/api/service.py to find usage sites"
+              },
+              {
+                "name": "write_file",
+                "description": "Write updated auth.py adding normalize_account wrapper and service.py updating imports and calls to use normalize_account"
+              }
+            ],
+            "depth": 0
+          },
+          "candidate": "task-1-c1",
+          "route": {
+            "task_id": "task-1",
+            "lane": "refactor",
+            "model": "reasoning",
+            "isolation": "sandboxed-worktree",
+            "test_strategy": "full",
+            "repair_focus": "policy-first",
+            "parallel_safe": false,
+            "cost_tier": "high-confidence",
+            "rationale": [
+              "structural code change",
+              "testing-heavy task",
+              "infrastructure-sensitive task",
+              "security-sensitive task",
+              "large-repo planning bias",
+              "wide structural change"
+            ]
+          },
+          "result": {
+            "task_id": "task-1",
+            "summary": "Added normalize_account wrapper function in auth.py and updated service.py to use normalize_account instead of normalize_user",
+            "file_operations": [
+              {
+                "mode": "write",
+                "path": "packages/shared/auth.py",
+                "content": "def normalize_user(name: str) -> str:\n    return name.strip().lower()\n\n\ndef normalize_account(name: str) -> str:\n    return normalize_user(name)\n"
+              },
+              {
+                "mode": "write",
+                "path": "apps/api/service.py",
+                "content": "from packages.shared.auth import normalize_account\n\n\ndef handler(name: str) -> str:\n    return normalize_account(name)\n"
+              }
+            ],
+            "commands": [
+              {
+                "command": "pytest -q",
+                "timeout": 120
+              }
+            ],
+            "skill_requests": [],
+            "notes": [
+              "normalize_account is a thin wrapper around normalize_user preserving identical behavior",
+              "service.py now imports normalize_account instead of normalize_user",
+              "tests should pass since behavior is unchanged"
+            ]
+          },
+          "repairs": [],
+          "changed_files": [
+            "apps/api/service.py",
+            "packages/shared/auth.py"
+          ],
+          "candidate_changed_files": [
+            "apps/api/service.py",
+            "packages/shared/auth.py"
+          ],
+          "command_results": [
+            {
+              "returncode": 0,
+              "output": ".                                                                        [100%]\n",
+              "error": "",
+              "command": "pytest -q",
+              "effective_command": "pytest --rootdir . -q",
+              "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\viki-task-1-c1-deinze3_",
+              "runtime": "local",
+              "sandboxed": false
+            }
+          ],
+          "approvals": [],
+          "created_skills": [],
+          "diff_preview": [
+            {
+              "path": "apps/api/service.py",
+              "patch": "--- a/apps/api/service.py\n+++ b/apps/api/service.py\n@@ -1,5 +1,5 @@\n-from packages.shared.auth import normalize_user\n+from packages.shared.auth import normalize_account\n \n \n def handler(name: str) -> str:\n-    return normalize_user(name)\n+    return normalize_account(name)\n",
+              "added": 2,
+              "removed": 2
+            },
+            {
+              "path": "packages/shared/auth.py",
+              "patch": "--- a/packages/shared/auth.py\n+++ b/packages/shared/auth.py\n@@ -1,2 +1,6 @@\n def normalize_user(name: str) -> str:\n     return name.strip().lower()\n+\n+\n+def normalize_account(name: str) -> str:\n+    return normalize_user(name)\n",
+              "added": 4,
+              "removed": 0
+            }
+          ],
+          "patch_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c1.patch",
+          "rollback_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c1-rollback.patch",
+          "worktree": {
+            "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\viki-task-1-c1-deinze3_",
+            "mode": "shadow-copy",
+            "requested_isolation": "sandboxed-worktree"
+          },
+          "sync": {
+            "status": "committed",
+            "copied": [
+              "apps/api/service.py",
+              "packages/shared/auth.py"
+            ],
+            "deleted": []
+          },
+          "confidence": 1.0,
+          "required_change": true,
+          "target_hit_count": 2,
+          "validation_successes": 1,
+          "evidence": {
+            "failure_count": 0,
+            "approval_count": 0,
+            "changed_file_count": 2,
+            "repair_attempts": 0,
+            "repo_impact": {
+              "changed_files": [
+                "packages/shared/auth.py",
+                "apps/api/service.py",
+                "auth.py",
+                "service.py",
+                "tests/test_service.py"
+              ],
+              "neighbors": [],
+              "tests": [
+                "tests/test_service.py"
+              ],
+              "packages": [
+                "apps/api",
+                "packages/shared",
+                "tests"
+              ],
+              "symbols": [
+                {
+                  "name": "handler",
+                  "kind": "function",
+                  "path": "apps/api/service.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "apps/api",
+                  "score": 1.0
+                },
+                {
+                  "name": "normalize_user",
+                  "kind": "function",
+                  "path": "packages/shared/auth.py",
+                  "line": 1,
+                  "container": "",
+                  "language": "python",
+                  "package": "packages/shared",
+                  "score": 1.0
+                },
+                {
+                  "name": "test_handler",
+                  "kind": "function",
+                  "path": "tests/test_service.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "tests",
+                  "score": 1.0
+                }
+              ]
+            }
+          },
+          "task_ledger": {
+            "task_id": "task-1",
+            "route": {
+              "task_id": "task-1",
+              "lane": "refactor",
+              "model": "reasoning",
+              "isolation": "sandboxed-worktree",
+              "test_strategy": "full",
+              "repair_focus": "policy-first",
+              "parallel_safe": false,
+              "cost_tier": "high-confidence",
+              "rationale": [
+                "structural code change",
+                "testing-heavy task",
+                "infrastructure-sensitive task",
+                "security-sensitive task",
+                "large-repo planning bias",
+                "wide structural change"
+              ]
+            },
+            "repo_context": {
+              "profile": {
+                "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo",
+                "file_count": 4,
+                "symbol_count": 3,
+                "package_count": 4,
+                "languages": {
+                  "python": 3,
+                  "docs": 1
+                },
+                "large_repo": false,
+                "instruction_files": [
+                  "README.md"
+                ]
+              },
+              "instructions": [
+                {
+                  "path": "README.md",
+                  "preview": "# Generic Refactor Fixture\n\nThis repo simulates a shared auth helper and a small API consumer.\n"
+                }
+              ],
+              "focus": [
+                {
+                  "path": "packages/shared/auth.py",
+                  "language": "python",
+                  "size": 70,
+                  "package": "packages/shared",
+                  "summary": "Python module defining functions: normalize_user",
+                  "symbols": [
+                    "normalize_user"
+                  ],
+                  "imports": [],
+                  "score": 185.0
+                },
+                {
+                  "path": "apps/api/service.py",
+                  "language": "python",
+                  "size": 113,
+                  "package": "apps/api",
+                  "summary": "Python module defining functions: handler",
+                  "symbols": [
+                    "handler"
+                  ],
+                  "imports": [
+                    "packages.shared.auth"
+                  ],
+                  "score": 165.0
+                },
+                {
+                  "path": "tests/test_service.py",
+                  "language": "python",
+                  "size": 108,
+                  "package": "tests",
+                  "summary": "Python module defining functions: test_handler",
+                  "symbols": [
+                    "test_handler"
+                  ],
+                  "imports": [
+                    "apps.api.service"
+                  ],
+                  "score": 165.0
+                }
+              ],
+              "impact": {
+                "changed_files": [
+                  "packages/shared/auth.py",
+                  "apps/api/service.py",
+                  "auth.py",
+                  "service.py",
+                  "tests/test_service.py"
+                ],
+                "neighbors": [],
+                "tests": [
+                  "tests/test_service.py"
+                ],
+                "packages": [
+                  "apps/api",
+                  "packages/shared",
+                  "tests"
+                ],
+                "symbols": [
+                  {
+                    "name": "handler",
+                    "kind": "function",
+                    "path": "apps/api/service.py",
+                    "line": 4,
+                    "container": "",
+                    "language": "python",
+                    "package": "apps/api",
+                    "score": 1.0
+                  },
+                  {
+                    "name": "normalize_user",
+                    "kind": "function",
+                    "path": "packages/shared/auth.py",
+                    "line": 1,
+                    "container": "",
+                    "language": "python",
+                    "package": "packages/shared",
+                    "score": 1.0
+                  },
+                  {
+                    "name": "test_handler",
+                    "kind": "function",
+                    "path": "tests/test_service.py",
+                    "line": 4,
+                    "container": "",
+                    "language": "python",
+                    "package": "tests",
+                    "score": 1.0
+                  }
+                ]
+              },
+              "symbols": [
+                {
+                  "name": "normalize_user",
+                  "kind": "function",
+                  "path": "packages/shared/auth.py",
+                  "line": 1,
+                  "container": "",
+                  "language": "python",
+                  "package": "packages/shared",
+                  "score": 36.0
+                },
+                {
+                  "name": "handler",
+                  "kind": "function",
+                  "path": "apps/api/service.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "apps/api",
+                  "score": 12.0
+                },
+                {
+                  "name": "test_handler",
+                  "kind": "function",
+                  "path": "tests/test_service.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "tests",
+                  "score": 12.0
+                }
+              ],
+              "packages": [
+                {
+                  "package": ".",
+                  "file_count": 1,
+                  "languages": {
+                    "docs": 1
+                  },
+                  "top_symbols": [],
+                  "summary": "Generic Refactor Fixture"
+                },
+                {
+                  "package": "apps/api",
+                  "file_count": 1,
+                  "languages": {
+                    "python": 1
+                  },
+                  "top_symbols": [
+                    "handler"
+                  ],
+                  "summary": "Python module defining functions: handler"
+                },
+                {
+                  "package": "packages/shared",
+                  "file_count": 1,
+                  "languages": {
+                    "python": 1
+                  },
+                  "top_symbols": [
+                    "normalize_user"
+                  ],
+                  "summary": "Python module defining functions: normalize_user"
+                },
+                {
+                  "package": "tests",
+                  "file_count": 1,
+                  "languages": {
+                    "python": 1
+                  },
+                  "top_symbols": [
+                    "test_handler"
+                  ],
+                  "summary": "Python module defining functions: test_handler"
+                }
+              ],
+              "snippets": [
+                {
+                  "path": "packages/shared/auth.py",
+                  "preview": "def normalize_user(name: str) -> str:\n    return name.strip().lower()\n"
+                },
+                {
+                  "path": "apps/api/service.py",
+                  "preview": "from packages.shared.auth import normalize_user\n\n\ndef handler(name: str) -> str:\n    return normalize_user(name)\n"
+                },
+                {
+                  "path": "tests/test_service.py",
+                  "preview": "from apps.api.service import handler\n\n\ndef test_handler() -> None:\n    assert handler(\" Alice \") == \"alice\"\n"
+                }
+              ]
+            },
+            "selection": {
+              "status": "accepted",
+              "winner": "task-1-c1",
+              "candidates": [
+                {
+                  "candidate": "task-1-c1",
+                  "confidence": 1.0,
+                  "failure_count": 0,
+                  "approval_count": 0,
+                  "changed_files": [
+                    "apps/api/service.py",
+                    "packages/shared/auth.py"
+                  ]
+                },
+                {
+                  "candidate": "task-1-c2",
+                  "confidence": 1.0,
+                  "failure_count": 0,
+                  "approval_count": 0,
+                  "changed_files": [
+                    "apps/api/service.py",
+                    "packages/shared/auth.py"
+                  ]
+                }
+              ]
+            }
+          },
+          "candidates": [
+            {
+              "candidate": "task-1-c1",
+              "confidence": 1.0,
+              "patch_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c1.patch",
+              "rollback_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c1-rollback.patch",
+              "sync_status": "committed",
+              "changed_files": [
+                "apps/api/service.py",
+                "packages/shared/auth.py"
+              ]
+            },
+            {
+              "candidate": "task-1-c2",
+              "confidence": 1.0,
+              "patch_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c2.patch",
+              "rollback_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c2-rollback.patch",
+              "sync_status": "candidate_ready",
+              "changed_files": [
+                "apps/api/service.py",
+                "packages/shared/auth.py"
+              ]
+            }
+          ]
+        }
+      ],
+      "coding_results": [
+        {
+          "task_id": "task-1",
+          "summary": "Added normalize_account wrapper function in auth.py and updated service.py to use normalize_account instead of normalize_user",
+          "file_operations": [
+            {
+              "mode": "write",
+              "path": "packages/shared/auth.py",
+              "content": "def normalize_user(name: str) -> str:\n    return name.strip().lower()\n\n\ndef normalize_account(name: str) -> str:\n    return normalize_user(name)\n"
+            },
+            {
+              "mode": "write",
+              "path": "apps/api/service.py",
+              "content": "from packages.shared.auth import normalize_account\n\n\ndef handler(name: str) -> str:\n    return normalize_account(name)\n"
+            }
+          ],
+          "commands": [
+            {
+              "command": "pytest -q",
+              "timeout": 120
+            }
+          ],
+          "skill_requests": [],
+          "notes": [
+            "normalize_account is a thin wrapper around normalize_user preserving identical behavior",
+            "service.py now imports normalize_account instead of normalize_user",
+            "tests should pass since behavior is unchanged"
+          ]
+        }
+      ],
+      "testing": {
+        "summary": "Heuristic post-task validation derived from changed files and impacted tests.",
+        "commands": [
+          {
+            "command": "pytest -q tests/test_service.py",
+            "timeout": 180
+          }
+        ],
+        "expected_outputs": [],
+        "source": "heuristic-targeted"
+      },
+      "security": {
+        "model_findings": {
+          "summary": "Audit initiated for refactoring normalize_user to normalize_account wrapper. Focus on behavioral preservation, import updates, and test validation across auth and service modules.",
+          "issues": [
+            {
+              "severity": "medium",
+              "path": "packages/shared/auth.py",
+              "issue": "Verify normalize_account wrapper delegates correctly to normalize_user without altering input/output contracts or side effects."
+            },
+            {
+              "severity": "low",
+              "path": "apps/api/service.py",
+              "issue": "Confirm import statement updated to reference normalize_account instead of normalize_user to ensure consistent usage."
+            },
+            {
+              "severity": "medium",
+              "path": "tests/test_service.py",
+              "issue": "Test file not listed in changed_files; ensure existing tests validate the new wrapper path or add specific coverage for normalize_account."
+            }
+          ],
+          "recommended_commands": [
+            {
+              "command": "python -m compileall .",
+              "timeout": 120
+            },
+            {
+              "command": "python -m unittest discover -s tests",
+              "timeout": 60
+            },
+            {
+              "command": "python -c \"from packages.shared.auth import normalize_account\"",
+              "timeout": 10
+            }
+          ]
+        },
+        "static_findings": {}
+      },
+      "repair_summary": {
+        "count": 0,
+        "categories": {},
+        "signals": []
+      },
+      "changed_files": [
+        "apps/api/service.py",
+        "packages/shared/auth.py"
+      ],
+      "diff_preview": [
+        {
+          "path": "apps/api/service.py",
+          "patch": "--- a/apps/api/service.py\n+++ b/apps/api/service.py\n@@ -1,5 +1,5 @@\n-from packages.shared.auth import normalize_user\n+from packages.shared.auth import normalize_account\n \n \n def handler(name: str) -> str:\n-    return normalize_user(name)\n+    return normalize_account(name)\n",
+          "added": 2,
+          "removed": 2
+        },
+        {
+          "path": "packages/shared/auth.py",
+          "patch": "--- a/packages/shared/auth.py\n+++ b/packages/shared/auth.py\n@@ -1,2 +1,6 @@\n def normalize_user(name: str) -> str:\n     return name.strip().lower()\n+\n+\n+def normalize_account(name: str) -> str:\n+    return normalize_user(name)\n",
+          "added": 4,
+          "removed": 0
+        }
+      ],
+      "patch_bundles": [
+        "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c1.patch"
+      ],
+      "repo_profile": {
+        "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo",
+        "file_count": 4,
+        "symbol_count": 3,
+        "package_count": 4,
+        "languages": {
+          "python": 3,
+          "docs": 1
+        },
+        "large_repo": false,
+        "instruction_files": [
+          "README.md"
+        ]
+      },
+      "repo_focus": [
+        {
+          "path": "packages/shared/auth.py",
+          "language": "python",
+          "size": 70,
+          "package": "packages/shared",
+          "summary": "Python module defining functions: normalize_user",
+          "symbols": [
+            "normalize_user"
+          ],
+          "imports": [],
+          "score": 25.0
+        },
+        {
+          "path": "tests/test_service.py",
+          "language": "python",
+          "size": 108,
+          "package": "tests",
+          "summary": "Python module defining functions: test_handler",
+          "symbols": [
+            "test_handler"
+          ],
+          "imports": [
+            "apps.api.service"
+          ],
+          "score": 12.0
+        },
+        {
+          "path": "README.md",
+          "language": "docs",
+          "size": 95,
+          "package": ".",
+          "summary": "Generic Refactor Fixture",
+          "symbols": [],
+          "imports": [],
+          "score": 8.0
+        },
+        {
+          "path": "apps/api/service.py",
+          "language": "python",
+          "size": 113,
+          "package": "apps/api",
+          "summary": "Python module defining functions: handler",
+          "symbols": [
+            "handler"
+          ],
+          "imports": [
+            "packages.shared.auth"
+          ],
+          "score": 1.0
+        }
+      ],
+      "repo_instructions": [
+        {
+          "path": "README.md",
+          "preview": "# Generic Refactor Fixture\n\nThis repo simulates a shared auth helper and a small API consumer.\n"
+        }
+      ],
+      "commands": [
+        {
+          "returncode": 0,
+          "output": ".                                                                        [100%]\n",
+          "error": "",
+          "command": "pytest -q",
+          "effective_command": "pytest --rootdir . -q",
+          "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\viki-task-1-c1-deinze3_",
+          "runtime": "local",
+          "sandboxed": false
+        },
+        {
+          "returncode": 0,
+          "output": ".                                                                        [100%]\n",
+          "error": "",
+          "command": "pytest -q tests/test_service.py",
+          "effective_command": "pytest --rootdir . -q tests/test_service.py",
+          "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo",
+          "runtime": "local",
+          "sandboxed": false
+        },
+        {
+          "returncode": 0,
+          "output": "Listing '.'...\nListing '.\\\\.pytest_cache'...\nListing '.\\\\.pytest_cache\\\\v'...\nListing '.\\\\.pytest_cache\\\\v\\\\cache'...\nListing '.\\\\.viki-workspace'...\nListing '.\\\\.viki-workspace\\\\benchmarks'...\nListing '.\\\\.viki-workspace\\\\logs'...\nListing '.\\\\.viki-workspace\\\\memory'...\nListing '.\\\\.viki-workspace\\\\runs'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\.pytest_cache'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\.pytest_cache\\\\v'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\.pytest_cache\\\\v\\\\cache'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\apps'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\apps\\\\api'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\packages'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\packages\\\\shared'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\tests'...\nCompiling '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\tests\\\\test_service.py'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\.pytest_cache'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\.pytest_cache\\\\v'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\.pytest_cache\\\\v\\\\cache'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\apps'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\apps\\\\api'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\packages'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\packages\\\\shared'...\nListing '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\tests'...\nCompiling '.\\\\.viki-workspace\\\\runs\\\\viki-ta[REDACTED_SECRET]\\\\tests\\\\test_service.py'...\nListing '.\\\\.viki-workspace\\\\sandbox'...\nListing '.\\\\.viki-workspace\\\\skill_envs'...\nListing '.\\\\.viki-workspace\\\\skills'...\nListing '.\\\\.viki-workspace\\\\temp'...\nListing '.\\\\apps'...\nListing '.\\\\apps\\\\api'...\nListing '.\\\\packages'...\nListing '.\\\\packages\\\\shared'...\nListing '.\\\\tests'...\nCompiling '.\\\\tests\\\\test_service.py'...\n",
+          "error": "",
+          "command": "python -m compileall .",
+          "effective_command": "python -m compileall .",
+          "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo",
+          "runtime": "local",
+          "sandboxed": false
+        },
+        {
+          "returncode": 0,
+          "output": "",
+          "error": "\n----------------------------------------------------------------------\nRan 0 tests in 0.000s\n\nOK\n",
+          "command": "python -m unittest discover -s tests",
+          "effective_command": "python -m unittest discover -s tests",
+          "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo",
+          "runtime": "local",
+          "sandboxed": false
+        },
+        {
+          "returncode": 0,
+          "output": "",
+          "error": "",
+          "command": "python -c \"from packages.shared.auth import normalize_account\"",
+          "effective_command": "python -c \"from packages.shared.auth import normalize_account\"",
+          "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo",
+          "runtime": "local",
+          "sandboxed": false
+        }
+      ],
+      "created_skills": [],
+      "pending_approvals": [],
+      "merge_summary": [
+        {
+          "mode": "write",
+          "path": "packages/shared/auth.py",
+          "content": "def normalize_user(name: str) -> str:\n    return name.strip().lower()\n\n\ndef normalize_account(name: str) -> str:\n    return normalize_user(name)\n"
+        },
+        {
+          "mode": "write",
+          "path": "apps/api/service.py",
+          "content": "from packages.shared.auth import normalize_account\n\n\ndef handler(name: str) -> str:\n    return normalize_account(name)\n"
+        }
+      ],
+      "isolated_workspaces": [
+        {
+          "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\viki-task-1-c1-deinze3_",
+          "mode": "shadow-copy",
+          "requested_isolation": "sandboxed-worktree"
+        }
+      ],
+      "task_ledgers": [
+        {
+          "task_id": "task-1",
+          "route": {
+            "task_id": "task-1",
+            "lane": "refactor",
+            "model": "reasoning",
+            "isolation": "sandboxed-worktree",
+            "test_strategy": "full",
+            "repair_focus": "policy-first",
+            "parallel_safe": false,
+            "cost_tier": "high-confidence",
+            "rationale": [
+              "structural code change",
+              "testing-heavy task",
+              "infrastructure-sensitive task",
+              "security-sensitive task",
+              "large-repo planning bias",
+              "wide structural change"
+            ]
+          },
+          "repo_context": {
+            "profile": {
+              "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo",
+              "file_count": 4,
+              "symbol_count": 3,
+              "package_count": 4,
+              "languages": {
+                "python": 3,
+                "docs": 1
+              },
+              "large_repo": false,
+              "instruction_files": [
+                "README.md"
+              ]
+            },
+            "instructions": [
+              {
+                "path": "README.md",
+                "preview": "# Generic Refactor Fixture\n\nThis repo simulates a shared auth helper and a small API consumer.\n"
+              }
+            ],
+            "focus": [
+              {
+                "path": "packages/shared/auth.py",
+                "language": "python",
+                "size": 70,
+                "package": "packages/shared",
+                "summary": "Python module defining functions: normalize_user",
+                "symbols": [
+                  "normalize_user"
+                ],
+                "imports": [],
+                "score": 185.0
+              },
+              {
+                "path": "apps/api/service.py",
+                "language": "python",
+                "size": 113,
+                "package": "apps/api",
+                "summary": "Python module defining functions: handler",
+                "symbols": [
+                  "handler"
+                ],
+                "imports": [
+                  "packages.shared.auth"
+                ],
+                "score": 165.0
+              },
+              {
+                "path": "tests/test_service.py",
+                "language": "python",
+                "size": 108,
+                "package": "tests",
+                "summary": "Python module defining functions: test_handler",
+                "symbols": [
+                  "test_handler"
+                ],
+                "imports": [
+                  "apps.api.service"
+                ],
+                "score": 165.0
+              }
+            ],
+            "impact": {
+              "changed_files": [
+                "packages/shared/auth.py",
+                "apps/api/service.py",
+                "auth.py",
+                "service.py",
+                "tests/test_service.py"
+              ],
+              "neighbors": [],
+              "tests": [
+                "tests/test_service.py"
+              ],
+              "packages": [
+                "apps/api",
+                "packages/shared",
+                "tests"
+              ],
+              "symbols": [
+                {
+                  "name": "handler",
+                  "kind": "function",
+                  "path": "apps/api/service.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "apps/api",
+                  "score": 1.0
+                },
+                {
+                  "name": "normalize_user",
+                  "kind": "function",
+                  "path": "packages/shared/auth.py",
+                  "line": 1,
+                  "container": "",
+                  "language": "python",
+                  "package": "packages/shared",
+                  "score": 1.0
+                },
+                {
+                  "name": "test_handler",
+                  "kind": "function",
+                  "path": "tests/test_service.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "tests",
+                  "score": 1.0
+                }
+              ]
+            },
+            "symbols": [
+              {
+                "name": "normalize_user",
+                "kind": "function",
+                "path": "packages/shared/auth.py",
+                "line": 1,
+                "container": "",
+                "language": "python",
+                "package": "packages/shared",
+                "score": 36.0
+              },
+              {
+                "name": "handler",
+                "kind": "function",
+                "path": "apps/api/service.py",
+                "line": 4,
+                "container": "",
+                "language": "python",
+                "package": "apps/api",
+                "score": 12.0
+              },
+              {
+                "name": "test_handler",
+                "kind": "function",
+                "path": "tests/test_service.py",
+                "line": 4,
+                "container": "",
+                "language": "python",
+                "package": "tests",
+                "score": 12.0
+              }
+            ],
+            "packages": [
+              {
+                "package": ".",
+                "file_count": 1,
+                "languages": {
+                  "docs": 1
+                },
+                "top_symbols": [],
+                "summary": "Generic Refactor Fixture"
+              },
+              {
+                "package": "apps/api",
+                "file_count": 1,
+                "languages": {
+                  "python": 1
+                },
+                "top_symbols": [
+                  "handler"
+                ],
+                "summary": "Python module defining functions: handler"
+              },
+              {
+                "package": "packages/shared",
+                "file_count": 1,
+                "languages": {
+                  "python": 1
+                },
+                "top_symbols": [
+                  "normalize_user"
+                ],
+                "summary": "Python module defining functions: normalize_user"
+              },
+              {
+                "package": "tests",
+                "file_count": 1,
+                "languages": {
+                  "python": 1
+                },
+                "top_symbols": [
+                  "test_handler"
+                ],
+                "summary": "Python module defining functions: test_handler"
+              }
+            ],
+            "snippets": [
+              {
+                "path": "packages/shared/auth.py",
+                "preview": "def normalize_user(name: str) -> str:\n    return name.strip().lower()\n"
+              },
+              {
+                "path": "apps/api/service.py",
+                "preview": "from packages.shared.auth import normalize_user\n\n\ndef handler(name: str) -> str:\n    return normalize_user(name)\n"
+              },
+              {
+                "path": "tests/test_service.py",
+                "preview": "from apps.api.service import handler\n\n\ndef test_handler() -> None:\n    assert handler(\" Alice \") == \"alice\"\n"
+              }
+            ]
+          },
+          "selection": {
+            "status": "accepted",
+            "winner": "task-1-c1",
+            "candidates": [
+              {
+                "candidate": "task-1-c1",
+                "confidence": 1.0,
+                "failure_count": 0,
+                "approval_count": 0,
+                "changed_files": [
+                  "apps/api/service.py",
+                  "packages/shared/auth.py"
+                ]
+              },
+              {
+                "candidate": "task-1-c2",
+                "confidence": 1.0,
+                "failure_count": 0,
+                "approval_count": 0,
+                "changed_files": [
+                  "apps/api/service.py",
+                  "packages/shared/auth.py"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "candidate_summary": [
+        [
+          {
+            "candidate": "task-1-c1",
+            "confidence": 1.0,
+            "patch_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c1.patch",
+            "rollback_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c1-rollback.patch",
+            "sync_status": "committed",
+            "changed_files": [
+              "apps/api/service.py",
+              "packages/shared/auth.py"
+            ]
+          },
+          {
+            "candidate": "task-1-c2",
+            "confidence": 1.0,
+            "patch_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c2.patch",
+            "rollback_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_refactor_repo\\.viki-workspace\\runs\\20260312-034341-task-1-c2-rollback.patch",
+            "sync_status": "candidate_ready",
+            "changed_files": [
+              "apps/api/service.py",
+              "packages/shared/auth.py"
+            ]
+          }
+        ]
+      ]
+    },
+    "protocol": {
+      "name": "viki-agent-protocol",
+      "version": "2026-03-11",
+      "run_object": "session",
+      "capabilities": {
+        "approvals": true,
+        "checkpoints": true,
+        "resume": true,
+        "events": true,
+        "skills": true,
+        "repo_intelligence": {
+          "search": true,
+          "symbols": true,
+          "impact": true,
+          "context_pack": true
+        },
+        "patches": {
+          "diff_preview": true,
+          "patch_bundle": true,
+          "rollback_bundle": true
+        },
+        "messaging": {
+          "telegram": false,
+          "whatsapp": false
+        }
+      }
+    }
+  },
+  "validation": {
+    "pytest": {
+      "returncode": 0,
+      "stdout": ".                                                                        [100%]\n",
+      "stderr": ""
+    },
+    "auth": {
+      "path": "packages/shared/auth.py",
+      "exists": true,
+      "contains": {
+        "def normalize_account": true
+      }
+    },
+    "service": {
+      "path": "apps/api/service.py",
+      "exists": true,
+      "contains": {
+        "normalize_account": true
+      }
+    }
+  },
+  "success": true
+}

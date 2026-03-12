@@ -1,0 +1,9 @@
+{
+  "monorepo": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\synthetic_stress_repos\\monorepo",
+  "polyglot": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\synthetic_stress_repos\\polyglot",
+  "migration": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\synthetic_stress_repos\\migration_repo",
+  "flaky": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\synthetic_stress_repos\\flaky_repo",
+  "bug_localization": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\synthetic_stress_repos\\bug_localization_repo",
+  "dependency_conflict": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\synthetic_stress_repos\\dependency_conflict_repo",
+  "large_test_matrix": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\synthetic_stress_repos\\large_test_matrix_repo"
+}

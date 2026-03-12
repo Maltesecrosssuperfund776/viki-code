@@ -1,0 +1,465 @@
+{
+  "subject_agent": "VIKI Code Live Final 4.1.4",
+  "subject_report": {
+    "workspace": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade",
+    "agent": "VIKI Code Live Final 4.1.4",
+    "cases": [
+      {
+        "name": "change-runbook",
+        "dataset": "public",
+        "passed": true,
+        "checks": [
+          {
+            "type": "file_exists",
+            "passed": true,
+            "path": "CHANGE_RUNBOOK.md"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "CHANGE_RUNBOOK.md",
+            "text": "Python"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "CHANGE_RUNBOOK.md",
+            "text": "TypeScript"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "CHANGE_RUNBOOK.md",
+            "text": "Go"
+          },
+          {
+            "type": "file_contains_any",
+            "passed": true,
+            "path": "CHANGE_RUNBOOK.md",
+            "texts": [
+              "pytest -q",
+              "python -m pytest -q",
+              "python -c"
+            ]
+          },
+          {
+            "type": "file_contains_any",
+            "passed": true,
+            "path": "CHANGE_RUNBOOK.md",
+            "texts": [
+              "npm test",
+              "npx ts-node",
+              "tsc --noEmit",
+              "npx tsx"
+            ]
+          },
+          {
+            "type": "file_contains_any",
+            "passed": true,
+            "path": "CHANGE_RUNBOOK.md",
+            "texts": [
+              "go test ./...",
+              "go run go/cmd/server/main.go",
+              "go build"
+            ]
+          }
+        ],
+        "session_id": "20260312-040327",
+        "changed_files": [
+          "CHANGE_RUNBOOK.md"
+        ],
+        "status": "completed",
+        "time_to_green_seconds": 188.817,
+        "pending_approvals": 0,
+        "failed_command_count": 4,
+        "repair_attempts": 0,
+        "merge_conflict_count": 0,
+        "confidence": 0.69,
+        "score": 0.8,
+        "artifacts_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\.viki-workspace\\benchmarks\\public\\change-runbook\\artifacts",
+        "source": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\benchmarks\\public\\change_runbook\\case.yaml",
+        "metadata": {
+          "track": "public",
+          "repo": "change-runbook-fixture",
+          "category": "repo-intel"
+        }
+      },
+      {
+        "name": "create-hello",
+        "dataset": "public",
+        "passed": true,
+        "checks": [
+          {
+            "type": "file_exists",
+            "passed": true,
+            "path": "hello.txt"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "hello.txt",
+            "text": "hello"
+          }
+        ],
+        "session_id": "20260312-040635",
+        "changed_files": [
+          "hello.txt"
+        ],
+        "status": "completed",
+        "time_to_green_seconds": 86.078,
+        "pending_approvals": 0,
+        "failed_command_count": 0,
+        "repair_attempts": 0,
+        "merge_conflict_count": 0,
+        "confidence": 0.69,
+        "score": 1.0,
+        "artifacts_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\.viki-workspace\\benchmarks\\public\\create-hello\\artifacts",
+        "source": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\benchmarks\\public\\create_hello\\case.yaml",
+        "metadata": {
+          "track": "public",
+          "repo": "sample-public-repo"
+        }
+      },
+      {
+        "name": "generic-bugfix",
+        "dataset": "public",
+        "passed": true,
+        "checks": [
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "app/calculator.py",
+            "text": "return a * b"
+          },
+          {
+            "type": "command_exit_zero",
+            "passed": true,
+            "command": "python -m pytest --rootdir . tests/test_calculator.py -q",
+            "returncode": 0,
+            "stdout": ".                                                                        [100%]\n",
+            "stderr": ""
+          }
+        ],
+        "session_id": "20260312-040802",
+        "changed_files": [
+          "app/calculator.py"
+        ],
+        "status": "completed",
+        "time_to_green_seconds": 47.887,
+        "pending_approvals": 0,
+        "failed_command_count": 0,
+        "repair_attempts": 0,
+        "merge_conflict_count": 0,
+        "confidence": 0.92,
+        "score": 1.0,
+        "artifacts_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\.viki-workspace\\benchmarks\\public\\generic-bugfix\\artifacts",
+        "source": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\benchmarks\\public\\generic_bugfix\\case.yaml",
+        "metadata": {
+          "track": "public",
+          "repo": "generic-bugfix-fixture"
+        }
+      },
+      {
+        "name": "generic-migration",
+        "dataset": "public",
+        "passed": true,
+        "checks": [
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "consumer.py",
+            "text": "sum_numbers"
+          },
+          {
+            "type": "command_exit_zero",
+            "passed": true,
+            "command": "python -m pytest --rootdir . tests/test_consumer.py -q",
+            "returncode": 0,
+            "stdout": ".                                                                        [100%]\n",
+            "stderr": ""
+          }
+        ],
+        "session_id": "20260312-040852",
+        "changed_files": [
+          "consumer.py"
+        ],
+        "status": "completed",
+        "time_to_green_seconds": 63.615,
+        "pending_approvals": 0,
+        "failed_command_count": 0,
+        "repair_attempts": 0,
+        "merge_conflict_count": 0,
+        "confidence": 0.92,
+        "score": 1.0,
+        "artifacts_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\.viki-workspace\\benchmarks\\public\\generic-migration\\artifacts",
+        "source": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\benchmarks\\public\\generic_migration\\case.yaml",
+        "metadata": {
+          "track": "public",
+          "repo": "generic-migration-fixture"
+        }
+      },
+      {
+        "name": "generic-refactor",
+        "dataset": "public",
+        "passed": true,
+        "checks": [
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "packages/shared/auth.py",
+            "text": "def normalize_account"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "apps/api/service.py",
+            "text": "normalize_account"
+          },
+          {
+            "type": "command_exit_zero",
+            "passed": true,
+            "command": "python -m pytest --rootdir . tests/test_service.py -q",
+            "returncode": 0,
+            "stdout": ".                                                                        [100%]\n",
+            "stderr": ""
+          }
+        ],
+        "session_id": "20260312-040958",
+        "changed_files": [
+          "apps/api/service.py",
+          "packages/shared/auth.py"
+        ],
+        "status": "completed",
+        "time_to_green_seconds": 95.805,
+        "pending_approvals": 0,
+        "failed_command_count": 0,
+        "repair_attempts": 0,
+        "merge_conflict_count": 0,
+        "confidence": 1.0,
+        "score": 1.0,
+        "artifacts_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\.viki-workspace\\benchmarks\\public\\generic-refactor\\artifacts",
+        "source": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\benchmarks\\public\\generic_refactor\\case.yaml",
+        "metadata": {
+          "track": "public",
+          "repo": "generic-refactor-fixture"
+        }
+      },
+      {
+        "name": "matrix-bugfix",
+        "dataset": "public",
+        "passed": true,
+        "checks": [
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "pkg/feature_4.py",
+            "text": "return value + 4"
+          },
+          {
+            "type": "command_exit_zero",
+            "passed": true,
+            "command": "python -m pytest --rootdir . tests/test_feature_1.py tests/test_feature_2.py tests/test_feature_3.py tests/test_feature_4.py -q",
+            "returncode": 0,
+            "stdout": "....                                                                     [100%]\n",
+            "stderr": ""
+          }
+        ],
+        "session_id": "20260312-041136",
+        "changed_files": [
+          "pkg/feature_1.py",
+          "pkg/feature_2.py",
+          "pkg/feature_3.py",
+          "pkg/feature_4.py"
+        ],
+        "status": "completed",
+        "time_to_green_seconds": 65.042,
+        "pending_approvals": 0,
+        "failed_command_count": 0,
+        "repair_attempts": 0,
+        "merge_conflict_count": 0,
+        "confidence": 1.0,
+        "score": 1.0,
+        "artifacts_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\.viki-workspace\\benchmarks\\public\\matrix-bugfix\\artifacts",
+        "source": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\benchmarks\\public\\matrix_bugfix\\case.yaml",
+        "metadata": {
+          "track": "public",
+          "repo": "matrix-bugfix-fixture",
+          "category": "bugfix"
+        }
+      },
+      {
+        "name": "monorepo-rollout",
+        "dataset": "public",
+        "passed": true,
+        "checks": [
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "packages/shared/auth.py",
+            "text": "def normalize_account"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "apps/api/service.py",
+            "text": "normalize_account"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "apps/cli/commands.py",
+            "text": "normalize_account"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "docs/auth.md",
+            "text": "normalize_account"
+          },
+          {
+            "type": "command_exit_zero",
+            "passed": true,
+            "command": "python -m pytest --rootdir . tests/test_service.py tests/test_cli.py -q",
+            "returncode": 0,
+            "stdout": "..                                                                       [100%]\n",
+            "stderr": ""
+          }
+        ],
+        "session_id": "20260312-041243",
+        "changed_files": [
+          "apps/api/service.py",
+          "apps/cli/commands.py",
+          "docs/auth.md",
+          "packages/shared/auth.py"
+        ],
+        "status": "completed",
+        "time_to_green_seconds": 102.069,
+        "pending_approvals": 0,
+        "failed_command_count": 0,
+        "repair_attempts": 0,
+        "merge_conflict_count": 0,
+        "confidence": 1.0,
+        "score": 1.0,
+        "artifacts_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\.viki-workspace\\benchmarks\\public\\monorepo-rollout\\artifacts",
+        "source": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\benchmarks\\public\\monorepo_rollout\\case.yaml",
+        "metadata": {
+          "track": "public",
+          "repo": "monorepo-rollout-fixture",
+          "category": "multi-agent"
+        }
+      },
+      {
+        "name": "repo-overview",
+        "dataset": "public",
+        "passed": true,
+        "checks": [
+          {
+            "type": "file_exists",
+            "passed": true,
+            "path": "REPO_OVERVIEW.md"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "REPO_OVERVIEW.md",
+            "text": "Python"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "REPO_OVERVIEW.md",
+            "text": "TypeScript"
+          },
+          {
+            "type": "file_contains",
+            "passed": true,
+            "path": "REPO_OVERVIEW.md",
+            "text": "Go"
+          }
+        ],
+        "session_id": "20260312-041427",
+        "changed_files": [
+          "REPO_OVERVIEW.md"
+        ],
+        "status": "completed",
+        "time_to_green_seconds": 161.78,
+        "pending_approvals": 0,
+        "failed_command_count": 0,
+        "repair_attempts": 0,
+        "merge_conflict_count": 0,
+        "confidence": 0.69,
+        "score": 1.0,
+        "artifacts_dir": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\.viki-workspace\\benchmarks\\public\\repo-overview\\artifacts",
+        "source": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\benchmarks\\public\\repo_overview\\case.yaml",
+        "metadata": {
+          "track": "public",
+          "repo": "repo-overview-fixture"
+        }
+      }
+    ],
+    "summary": {
+      "agent": "VIKI Code Live Final 4.1.4",
+      "total": 8,
+      "passed": 8,
+      "datasets": {
+        "public": 8
+      },
+      "task_completion_rate": 1.0,
+      "pass_at_1": 1.0,
+      "median_time_to_green": 90.941,
+      "mean_case_score": 0.975,
+      "long_task_completion_rate": 1.0,
+      "security_approval_incidents": 0,
+      "revert_rate": 0.0,
+      "human_review_acceptance": null,
+      "cost_per_solved_task": null
+    }
+  },
+  "baselines": [
+    {
+      "baseline": "codex",
+      "baseline_agent": "Codex",
+      "task_completion_rate_delta": 0.5,
+      "pass_at_1_delta": 0.5,
+      "median_time_to_green_delta": -87.341,
+      "subject": {
+        "task_completion_rate": 1.0,
+        "median_time_to_green": 90.941
+      },
+      "baseline_metrics": {
+        "task_completion_rate": 0.5,
+        "median_time_to_green": 3.6
+      }
+    },
+    {
+      "baseline": "claude_code",
+      "baseline_agent": "Claude Code",
+      "task_completion_rate_delta": 0.5,
+      "pass_at_1_delta": 0.5,
+      "median_time_to_green_delta": -86.841,
+      "subject": {
+        "task_completion_rate": 1.0,
+        "median_time_to_green": 90.941
+      },
+      "baseline_metrics": {
+        "task_completion_rate": 0.5,
+        "median_time_to_green": 4.1
+      }
+    },
+    {
+      "baseline": "opencode",
+      "baseline_agent": "OpenCode",
+      "task_completion_rate_delta": 0.5,
+      "pass_at_1_delta": 0.5,
+      "median_time_to_green_delta": -86.141,
+      "subject": {
+        "task_completion_rate": 1.0,
+        "median_time_to_green": 90.941
+      },
+      "baseline_metrics": {
+        "task_completion_rate": 0.5,
+        "median_time_to_green": 4.8
+      }
+    }
+  ]
+}

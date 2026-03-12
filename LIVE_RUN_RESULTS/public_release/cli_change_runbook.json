@@ -1,0 +1,32 @@
+{
+  "success": true,
+  "cli": {
+    "prepare_returncode": 0,
+    "prepare_stdout": "VIKI workspace ready at C:\\Users\\Nabeel \nSaleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\cli_\nchange_runbook_repo\\.viki-workspace\nDry run complete. Start with: viki up C:\\Users\\Nabeel \nSaleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\cli_\nchange_runbook_repo\n",
+    "prepare_stderr": "",
+    "returncode": 0,
+    "session_id": "20260312-035534",
+    "stdout": "{\"timestamp\": null, \"level\": null, \"name\": \"viki.infrastructure.observability\", \"message\": \"Metrics server started on port 9090\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"viki\", \"message\": \"docker unavailable | {\\\"error\\\": \\\"Error while fetching server API version: (2, 'CreateFile', 'The system cannot find the file specified.')\\\"}\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"viki\", \"message\": \"HiveMind initialized | {\\\"session\\\": \\\"20260312-035534\\\", \\\"workspace\\\": \\\"C:\\\\\\\\Users\\\\\\\\Nabeel Saleem\\\\\\\\Music\\\\\\\\viki_code_4_0_topline_upgrade\\\\\\\\LIVE_RUN_RESULTS\\\\\\\\public_release\\\\\\\\cli_change_runbook_repo\\\"}\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\n{\"timestamp\": null, \"level\": null, \"name\": \"LiteLLM\", \"message\": \"\\nLiteLLM completion() model= qwen3.5-plus; provider = openai\"}\nSession 20260312-035534\nStatus: completed\nChanged files:\n  - CHANGE_RUNBOOK.md\nCommands with non-zero exit codes:\n  - python -c \"c=open('CHANGE_RUNBOOK.md','r',encoding='utf-8').read(); assert \n'py_compile' in c and 'tsc' in c and 'go build' in c, 'Missing specific \nvalidation commands'\": 1\n  - go vet ./go/cmd/server: 127\n  - npx tsc --noEmit web/app.ts: 127\n",
+    "stderr": "\u001b[92m07:55:34 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m07:56:49 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m07:57:29 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m07:57:38 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n\u001b[92m07:58:10 - LiteLLM:INFO\u001b[0m: utils.py:3895 - \nLiteLLM completion() model= qwen3.5-plus; provider = openai\n"
+  },
+  "validation": {
+    "languages": {
+      "path": "CHANGE_RUNBOOK.md",
+      "exists": true,
+      "contains": {
+        "Python": true,
+        "TypeScript": true,
+        "Go": true
+      }
+    },
+    "commands": {
+      "path": "CHANGE_RUNBOOK.md",
+      "exists": true,
+      "contains_any": {
+        "python": true,
+        "typescript": true,
+        "go": true
+      }
+    }
+  }
+}

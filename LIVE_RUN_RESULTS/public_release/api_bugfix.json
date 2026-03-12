@@ -1,0 +1,866 @@
+{
+  "http_status": 200,
+  "payload": {
+    "run": {
+      "session_id": "20260312-034243",
+      "status": "completed",
+      "request": "Fix the multiply bug in this repo, run the relevant tests, and stop with evidence if confidence is too low.",
+      "branch": "viki-20260312-034243",
+      "plan": {
+        "goal": "Fix the multiplication bug in app/calculator.py and verify via tests",
+        "summary": "Read the calculator module and test suite to identify the arithmetic error in the multiply function, apply the correction, and run pytest to confirm resolution.",
+        "tasks": [
+          {
+            "id": "task-1",
+            "title": "Diagnose and Implement Fix",
+            "objective": "Identify the bug in the multiply function by reading source and tests, then write the corrected logic to app/calculator.py",
+            "target_files": [
+              "app/calculator.py"
+            ],
+            "deliverables": [
+              "Updated app/calculator.py with correct multiplication logic"
+            ],
+            "commands": [],
+            "skill_requests": [
+              {
+                "name": "read_file",
+                "description": "Read app/calculator.py and tests/test_calculator.py to identify the bug"
+              },
+              {
+                "name": "write_file",
+                "description": "Update app/calculator.py to fix the multiply function"
+              }
+            ],
+            "subtasks": []
+          },
+          {
+            "id": "task-2",
+            "title": "Validate Fix",
+            "objective": "Execute the test suite to confirm the multiply bug is resolved",
+            "target_files": [
+              "tests/test_calculator.py"
+            ],
+            "deliverables": [
+              "Test execution output showing pass status"
+            ],
+            "commands": [
+              {
+                "command": "pytest -q",
+                "timeout": 120
+              }
+            ],
+            "skill_requests": [
+              {
+                "name": "run_command",
+                "description": "Run pytest to validate the fix"
+              }
+            ],
+            "subtasks": []
+          }
+        ],
+        "testing_commands": [
+          {
+            "command": "pytest -q",
+            "timeout": 120
+          }
+        ],
+        "acceptance_criteria": [
+          "test_multiply passes successfully",
+          "multiply function returns the product of inputs (a * b)",
+          "No regression in other calculator functions"
+        ]
+      },
+      "tasks": [
+        {
+          "id": "task-1",
+          "title": "Diagnose and Implement Fix",
+          "objective": "Identify the bug in the multiply function by reading source and tests, then write the corrected logic to app/calculator.py",
+          "target_files": [
+            "app/calculator.py",
+            "tests/test_calculator.py"
+          ],
+          "deliverables": [
+            "Updated app/calculator.py with correct multiplication logic"
+          ],
+          "commands": [
+            {
+              "command": "pytest -q",
+              "timeout": 120
+            }
+          ],
+          "skill_requests": [
+            {
+              "name": "read_file",
+              "description": "Read app/calculator.py and tests/test_calculator.py to identify the bug"
+            },
+            {
+              "name": "write_file",
+              "description": "Update app/calculator.py to fix the multiply function"
+            }
+          ],
+          "depth": 0
+        }
+      ],
+      "routes": [
+        {
+          "task_id": "task-1",
+          "lane": "repair",
+          "model": "coding",
+          "isolation": "git-worktree",
+          "test_strategy": "full",
+          "repair_focus": "root-cause",
+          "parallel_safe": true,
+          "cost_tier": "balanced",
+          "rationale": [
+            "repair-oriented task",
+            "testing-heavy task"
+          ]
+        }
+      ],
+      "task_results": [
+        {
+          "task": {
+            "id": "task-1",
+            "title": "Diagnose and Implement Fix",
+            "objective": "Identify the bug in the multiply function by reading source and tests, then write the corrected logic to app/calculator.py",
+            "target_files": [
+              "app/calculator.py",
+              "tests/test_calculator.py"
+            ],
+            "deliverables": [
+              "Updated app/calculator.py with correct multiplication logic"
+            ],
+            "commands": [
+              {
+                "command": "pytest -q",
+                "timeout": 120
+              }
+            ],
+            "skill_requests": [
+              {
+                "name": "read_file",
+                "description": "Read app/calculator.py and tests/test_calculator.py to identify the bug"
+              },
+              {
+                "name": "write_file",
+                "description": "Update app/calculator.py to fix the multiply function"
+              }
+            ],
+            "depth": 0
+          },
+          "candidate": "task-1-c1",
+          "route": {
+            "task_id": "task-1",
+            "lane": "repair",
+            "model": "coding",
+            "isolation": "git-worktree",
+            "test_strategy": "full",
+            "repair_focus": "root-cause",
+            "parallel_safe": true,
+            "cost_tier": "balanced",
+            "rationale": [
+              "repair-oriented task",
+              "testing-heavy task"
+            ]
+          },
+          "result": {
+            "task_id": "task-1",
+            "summary": "The bug in the multiply function is that it returns a + b (addition) instead of a * b (multiplication). The test expects 3 * 4 == 12, but with a + b, it computes 3 + 4 = 7, causing assertion failure.",
+            "file_operations": [
+              {
+                "mode": "write",
+                "path": "app/calculator.py",
+                "content": "def multiply(a: int, b: int) -> int:\n    return a * b\n"
+              }
+            ],
+            "commands": [
+              {
+                "command": "pytest -q",
+                "timeout": 120
+              }
+            ],
+            "skill_requests": [],
+            "notes": [
+              "The fix replaces addition (a + b) with multiplication (a * b) in the multiply function.",
+              "After applying the fix, running pytest -q should pass the test_multiply test."
+            ]
+          },
+          "repairs": [],
+          "changed_files": [
+            "app/calculator.py"
+          ],
+          "candidate_changed_files": [
+            "app/calculator.py"
+          ],
+          "command_results": [
+            {
+              "returncode": 0,
+              "output": ".                                                                        [100%]\n",
+              "error": "",
+              "command": "pytest -q",
+              "effective_command": "pytest --rootdir . -q",
+              "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\viki-task-1-c1-5k3c0aaz",
+              "runtime": "local",
+              "sandboxed": false
+            }
+          ],
+          "approvals": [],
+          "created_skills": [],
+          "diff_preview": [
+            {
+              "path": "app/calculator.py",
+              "patch": "--- a/app/calculator.py\n+++ b/app/calculator.py\n@@ -1,2 +1,2 @@\n def multiply(a: int, b: int) -> int:\n-    return a + b\n+    return a * b\n",
+              "added": 1,
+              "removed": 1
+            }
+          ],
+          "patch_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\20260312-034243-task-1-c1.patch",
+          "rollback_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\20260312-034243-task-1-c1-rollback.patch",
+          "worktree": {
+            "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\viki-task-1-c1-5k3c0aaz",
+            "mode": "shadow-copy",
+            "requested_isolation": "git-worktree"
+          },
+          "sync": {
+            "status": "committed",
+            "copied": [
+              "app/calculator.py"
+            ],
+            "deleted": []
+          },
+          "confidence": 0.92,
+          "required_change": true,
+          "target_hit_count": 1,
+          "validation_successes": 1,
+          "evidence": {
+            "failure_count": 0,
+            "approval_count": 0,
+            "changed_file_count": 1,
+            "repair_attempts": 0,
+            "repo_impact": {
+              "changed_files": [
+                "app/calculator.py",
+                "tests/test_calculator.py"
+              ],
+              "neighbors": [],
+              "tests": [
+                "tests/test_calculator.py"
+              ],
+              "packages": [
+                "app",
+                "tests"
+              ],
+              "symbols": [
+                {
+                  "name": "multiply",
+                  "kind": "function",
+                  "path": "app/calculator.py",
+                  "line": 1,
+                  "container": "",
+                  "language": "python",
+                  "package": "app",
+                  "score": 1.0
+                },
+                {
+                  "name": "test_multiply",
+                  "kind": "function",
+                  "path": "tests/test_calculator.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "tests",
+                  "score": 1.0
+                }
+              ]
+            }
+          },
+          "task_ledger": {
+            "task_id": "task-1",
+            "route": {
+              "task_id": "task-1",
+              "lane": "repair",
+              "model": "coding",
+              "isolation": "git-worktree",
+              "test_strategy": "full",
+              "repair_focus": "root-cause",
+              "parallel_safe": true,
+              "cost_tier": "balanced",
+              "rationale": [
+                "repair-oriented task",
+                "testing-heavy task"
+              ]
+            },
+            "repo_context": {
+              "profile": {
+                "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo",
+                "file_count": 3,
+                "symbol_count": 2,
+                "package_count": 3,
+                "languages": {
+                  "python": 2,
+                  "docs": 1
+                },
+                "large_repo": false,
+                "instruction_files": [
+                  "README.md"
+                ]
+              },
+              "instructions": [
+                {
+                  "path": "README.md",
+                  "preview": "# Generic Bugfix Fixture\n\nThis repo has a small arithmetic bug and a focused regression test.\n"
+                }
+              ],
+              "focus": [
+                {
+                  "path": "tests/test_calculator.py",
+                  "language": "python",
+                  "size": 99,
+                  "package": "tests",
+                  "summary": "Python module defining functions: test_multiply",
+                  "symbols": [
+                    "test_multiply"
+                  ],
+                  "imports": [
+                    "app.calculator"
+                  ],
+                  "score": 196.0
+                },
+                {
+                  "path": "app/calculator.py",
+                  "language": "python",
+                  "size": 54,
+                  "package": "app",
+                  "summary": "Python module defining functions: multiply",
+                  "symbols": [
+                    "multiply"
+                  ],
+                  "imports": [],
+                  "score": 184.0
+                }
+              ],
+              "impact": {
+                "changed_files": [
+                  "app/calculator.py",
+                  "tests/test_calculator.py"
+                ],
+                "neighbors": [],
+                "tests": [
+                  "tests/test_calculator.py"
+                ],
+                "packages": [
+                  "app",
+                  "tests"
+                ],
+                "symbols": [
+                  {
+                    "name": "multiply",
+                    "kind": "function",
+                    "path": "app/calculator.py",
+                    "line": 1,
+                    "container": "",
+                    "language": "python",
+                    "package": "app",
+                    "score": 1.0
+                  },
+                  {
+                    "name": "test_multiply",
+                    "kind": "function",
+                    "path": "tests/test_calculator.py",
+                    "line": 4,
+                    "container": "",
+                    "language": "python",
+                    "package": "tests",
+                    "score": 1.0
+                  }
+                ]
+              },
+              "symbols": [
+                {
+                  "name": "multiply",
+                  "kind": "function",
+                  "path": "app/calculator.py",
+                  "line": 1,
+                  "container": "",
+                  "language": "python",
+                  "package": "app",
+                  "score": 30.0
+                },
+                {
+                  "name": "test_multiply",
+                  "kind": "function",
+                  "path": "tests/test_calculator.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "tests",
+                  "score": 30.0
+                }
+              ],
+              "packages": [
+                {
+                  "package": ".",
+                  "file_count": 1,
+                  "languages": {
+                    "docs": 1
+                  },
+                  "top_symbols": [],
+                  "summary": "Generic Bugfix Fixture"
+                },
+                {
+                  "package": "app",
+                  "file_count": 1,
+                  "languages": {
+                    "python": 1
+                  },
+                  "top_symbols": [
+                    "multiply"
+                  ],
+                  "summary": "Python module defining functions: multiply"
+                },
+                {
+                  "package": "tests",
+                  "file_count": 1,
+                  "languages": {
+                    "python": 1
+                  },
+                  "top_symbols": [
+                    "test_multiply"
+                  ],
+                  "summary": "Python module defining functions: test_multiply"
+                }
+              ],
+              "snippets": [
+                {
+                  "path": "tests/test_calculator.py",
+                  "preview": "from app.calculator import multiply\n\n\ndef test_multiply() -> None:\n    assert multiply(3, 4) == 12\n"
+                },
+                {
+                  "path": "app/calculator.py",
+                  "preview": "def multiply(a: int, b: int) -> int:\n    return a + b\n"
+                }
+              ]
+            },
+            "selection": {
+              "status": "accepted",
+              "winner": "task-1-c1",
+              "candidates": [
+                {
+                  "candidate": "task-1-c1",
+                  "confidence": 0.92,
+                  "failure_count": 0,
+                  "approval_count": 0,
+                  "changed_files": [
+                    "app/calculator.py"
+                  ]
+                }
+              ]
+            }
+          },
+          "candidates": [
+            {
+              "candidate": "task-1-c1",
+              "confidence": 0.92,
+              "patch_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\20260312-034243-task-1-c1.patch",
+              "rollback_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\20260312-034243-task-1-c1-rollback.patch",
+              "sync_status": "committed",
+              "changed_files": [
+                "app/calculator.py"
+              ]
+            }
+          ]
+        }
+      ],
+      "coding_results": [
+        {
+          "task_id": "task-1",
+          "summary": "The bug in the multiply function is that it returns a + b (addition) instead of a * b (multiplication). The test expects 3 * 4 == 12, but with a + b, it computes 3 + 4 = 7, causing assertion failure.",
+          "file_operations": [
+            {
+              "mode": "write",
+              "path": "app/calculator.py",
+              "content": "def multiply(a: int, b: int) -> int:\n    return a * b\n"
+            }
+          ],
+          "commands": [
+            {
+              "command": "pytest -q",
+              "timeout": 120
+            }
+          ],
+          "skill_requests": [],
+          "notes": [
+            "The fix replaces addition (a + b) with multiplication (a * b) in the multiply function.",
+            "After applying the fix, running pytest -q should pass the test_multiply test."
+          ]
+        }
+      ],
+      "testing": {
+        "summary": "Skipped model-generated testing because task-level validation already covered the localized changes.",
+        "commands": [],
+        "expected_outputs": [],
+        "source": "task-level-validation"
+      },
+      "security": {
+        "model_findings": {
+          "summary": "Skipped model-driven security review for a localized low-risk change and relied on static scanning plus lightweight verification.",
+          "issues": [],
+          "recommended_commands": [
+            {
+              "command": "python -m compileall app/calculator.py",
+              "timeout": 180
+            }
+          ],
+          "source": "static-and-heuristic"
+        },
+        "static_findings": {}
+      },
+      "repair_summary": {
+        "count": 0,
+        "categories": {},
+        "signals": []
+      },
+      "changed_files": [
+        "app/calculator.py"
+      ],
+      "diff_preview": [
+        {
+          "path": "app/calculator.py",
+          "patch": "--- a/app/calculator.py\n+++ b/app/calculator.py\n@@ -1,2 +1,2 @@\n def multiply(a: int, b: int) -> int:\n-    return a + b\n+    return a * b\n",
+          "added": 1,
+          "removed": 1
+        }
+      ],
+      "patch_bundles": [
+        "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\20260312-034243-task-1-c1.patch"
+      ],
+      "repo_profile": {
+        "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo",
+        "file_count": 3,
+        "symbol_count": 2,
+        "package_count": 3,
+        "languages": {
+          "python": 2,
+          "docs": 1
+        },
+        "large_repo": false,
+        "instruction_files": [
+          "README.md"
+        ]
+      },
+      "repo_focus": [
+        {
+          "path": "tests/test_calculator.py",
+          "language": "python",
+          "size": 99,
+          "package": "tests",
+          "summary": "Python module defining functions: test_multiply",
+          "symbols": [
+            "test_multiply"
+          ],
+          "imports": [
+            "app.calculator"
+          ],
+          "score": 28.0
+        },
+        {
+          "path": "app/calculator.py",
+          "language": "python",
+          "size": 54,
+          "package": "app",
+          "summary": "Python module defining functions: multiply",
+          "symbols": [
+            "multiply"
+          ],
+          "imports": [],
+          "score": 13.0
+        }
+      ],
+      "repo_instructions": [
+        {
+          "path": "README.md",
+          "preview": "# Generic Bugfix Fixture\n\nThis repo has a small arithmetic bug and a focused regression test.\n"
+        }
+      ],
+      "commands": [
+        {
+          "returncode": 0,
+          "output": ".                                                                        [100%]\n",
+          "error": "",
+          "command": "pytest -q",
+          "effective_command": "pytest --rootdir . -q",
+          "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\viki-task-1-c1-5k3c0aaz",
+          "runtime": "local",
+          "sandboxed": false
+        },
+        {
+          "returncode": 0,
+          "output": "Compiling 'app/calculator.py'...\n",
+          "error": "",
+          "command": "python -m compileall app/calculator.py",
+          "effective_command": "python -m compileall app/calculator.py",
+          "cwd": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo",
+          "runtime": "local",
+          "sandboxed": false
+        }
+      ],
+      "created_skills": [],
+      "pending_approvals": [],
+      "merge_summary": [
+        {
+          "mode": "write",
+          "path": "app/calculator.py",
+          "content": "def multiply(a: int, b: int) -> int:\n    return a * b\n"
+        }
+      ],
+      "isolated_workspaces": [
+        {
+          "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\viki-task-1-c1-5k3c0aaz",
+          "mode": "shadow-copy",
+          "requested_isolation": "git-worktree"
+        }
+      ],
+      "task_ledgers": [
+        {
+          "task_id": "task-1",
+          "route": {
+            "task_id": "task-1",
+            "lane": "repair",
+            "model": "coding",
+            "isolation": "git-worktree",
+            "test_strategy": "full",
+            "repair_focus": "root-cause",
+            "parallel_safe": true,
+            "cost_tier": "balanced",
+            "rationale": [
+              "repair-oriented task",
+              "testing-heavy task"
+            ]
+          },
+          "repo_context": {
+            "profile": {
+              "root": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo",
+              "file_count": 3,
+              "symbol_count": 2,
+              "package_count": 3,
+              "languages": {
+                "python": 2,
+                "docs": 1
+              },
+              "large_repo": false,
+              "instruction_files": [
+                "README.md"
+              ]
+            },
+            "instructions": [
+              {
+                "path": "README.md",
+                "preview": "# Generic Bugfix Fixture\n\nThis repo has a small arithmetic bug and a focused regression test.\n"
+              }
+            ],
+            "focus": [
+              {
+                "path": "tests/test_calculator.py",
+                "language": "python",
+                "size": 99,
+                "package": "tests",
+                "summary": "Python module defining functions: test_multiply",
+                "symbols": [
+                  "test_multiply"
+                ],
+                "imports": [
+                  "app.calculator"
+                ],
+                "score": 196.0
+              },
+              {
+                "path": "app/calculator.py",
+                "language": "python",
+                "size": 54,
+                "package": "app",
+                "summary": "Python module defining functions: multiply",
+                "symbols": [
+                  "multiply"
+                ],
+                "imports": [],
+                "score": 184.0
+              }
+            ],
+            "impact": {
+              "changed_files": [
+                "app/calculator.py",
+                "tests/test_calculator.py"
+              ],
+              "neighbors": [],
+              "tests": [
+                "tests/test_calculator.py"
+              ],
+              "packages": [
+                "app",
+                "tests"
+              ],
+              "symbols": [
+                {
+                  "name": "multiply",
+                  "kind": "function",
+                  "path": "app/calculator.py",
+                  "line": 1,
+                  "container": "",
+                  "language": "python",
+                  "package": "app",
+                  "score": 1.0
+                },
+                {
+                  "name": "test_multiply",
+                  "kind": "function",
+                  "path": "tests/test_calculator.py",
+                  "line": 4,
+                  "container": "",
+                  "language": "python",
+                  "package": "tests",
+                  "score": 1.0
+                }
+              ]
+            },
+            "symbols": [
+              {
+                "name": "multiply",
+                "kind": "function",
+                "path": "app/calculator.py",
+                "line": 1,
+                "container": "",
+                "language": "python",
+                "package": "app",
+                "score": 30.0
+              },
+              {
+                "name": "test_multiply",
+                "kind": "function",
+                "path": "tests/test_calculator.py",
+                "line": 4,
+                "container": "",
+                "language": "python",
+                "package": "tests",
+                "score": 30.0
+              }
+            ],
+            "packages": [
+              {
+                "package": ".",
+                "file_count": 1,
+                "languages": {
+                  "docs": 1
+                },
+                "top_symbols": [],
+                "summary": "Generic Bugfix Fixture"
+              },
+              {
+                "package": "app",
+                "file_count": 1,
+                "languages": {
+                  "python": 1
+                },
+                "top_symbols": [
+                  "multiply"
+                ],
+                "summary": "Python module defining functions: multiply"
+              },
+              {
+                "package": "tests",
+                "file_count": 1,
+                "languages": {
+                  "python": 1
+                },
+                "top_symbols": [
+                  "test_multiply"
+                ],
+                "summary": "Python module defining functions: test_multiply"
+              }
+            ],
+            "snippets": [
+              {
+                "path": "tests/test_calculator.py",
+                "preview": "from app.calculator import multiply\n\n\ndef test_multiply() -> None:\n    assert multiply(3, 4) == 12\n"
+              },
+              {
+                "path": "app/calculator.py",
+                "preview": "def multiply(a: int, b: int) -> int:\n    return a + b\n"
+              }
+            ]
+          },
+          "selection": {
+            "status": "accepted",
+            "winner": "task-1-c1",
+            "candidates": [
+              {
+                "candidate": "task-1-c1",
+                "confidence": 0.92,
+                "failure_count": 0,
+                "approval_count": 0,
+                "changed_files": [
+                  "app/calculator.py"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "candidate_summary": [
+        [
+          {
+            "candidate": "task-1-c1",
+            "confidence": 0.92,
+            "patch_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\20260312-034243-task-1-c1.patch",
+            "rollback_bundle": "C:\\Users\\Nabeel Saleem\\Music\\viki_code_4_0_topline_upgrade\\LIVE_RUN_RESULTS\\public_release\\api_bugfix_repo\\.viki-workspace\\runs\\20260312-034243-task-1-c1-rollback.patch",
+            "sync_status": "committed",
+            "changed_files": [
+              "app/calculator.py"
+            ]
+          }
+        ]
+      ]
+    },
+    "protocol": {
+      "name": "viki-agent-protocol",
+      "version": "2026-03-11",
+      "run_object": "session",
+      "capabilities": {
+        "approvals": true,
+        "checkpoints": true,
+        "resume": true,
+        "events": true,
+        "skills": true,
+        "repo_intelligence": {
+          "search": true,
+          "symbols": true,
+          "impact": true,
+          "context_pack": true
+        },
+        "patches": {
+          "diff_preview": true,
+          "patch_bundle": true,
+          "rollback_bundle": true
+        },
+        "messaging": {
+          "telegram": false,
+          "whatsapp": false
+        }
+      }
+    }
+  },
+  "validation": {
+    "pytest": {
+      "returncode": 0,
+      "stdout": ".                                                                        [100%]\n",
+      "stderr": ""
+    },
+    "file": {
+      "path": "app/calculator.py",
+      "exists": true,
+      "contains": {
+        "return a * b": true
+      }
+    }
+  },
+  "success": true
+}
