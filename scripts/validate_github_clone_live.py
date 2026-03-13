@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -81,6 +82,15 @@ def copy_fixture(source: Path, target: Path) -> None:
     shutil.copytree(source, target)
 
 
+def remove_tree(path: Path) -> None:
+    def _handle_remove_readonly(func, target, exc_info):  # pragma: no cover - platform-dependent cleanup
+        os.chmod(target, stat.S_IWRITE)
+        func(target)
+
+    if path.exists():
+        shutil.rmtree(path, onerror=_handle_remove_readonly)
+
+
 def run_command(command: list[str], cwd: Path, env: dict[str, str], timeout: int, security: SecurityScanner) -> dict[str, object]:
     completed = subprocess.run(
         command,
@@ -113,7 +123,7 @@ def main() -> None:
 
     output = Path(args.output).resolve()
     if output.exists():
-        shutil.rmtree(output)
+        remove_tree(output)
     output.mkdir(parents=True, exist_ok=True)
 
     security = SecurityScanner()

@@ -156,3 +156,23 @@ def test_github_clone_validator_isolates_selected_provider_env():
     assert isolated["DASHSCOPE_API_KEY"] == "redacted"
     assert "OPENAI_API_KEY" not in isolated
     assert isolated["VIKI_PROVIDER"] == "dashscope"
+
+
+def test_github_clone_validator_remove_tree_handles_readonly_file(tmp_path: Path):
+    spec = importlib.util.spec_from_file_location(
+        "viki_validate_github_clone_live",
+        Path(__file__).resolve().parents[1] / "scripts" / "validate_github_clone_live.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+
+    target = tmp_path / "readonly"
+    target.mkdir()
+    file_path = target / "sample.txt"
+    file_path.write_text("value", encoding="utf-8")
+    file_path.chmod(0o444)
+
+    module.remove_tree(target)
+
+    assert not target.exists()
