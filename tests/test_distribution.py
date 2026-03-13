@@ -133,3 +133,26 @@ def test_github_clone_validator_detects_dashscope_provider():
 
     assert detected["provider"] == "dashscope"
     assert "DASHSCOPE_API_KEY" in detected["forwarded_keys"]
+
+
+def test_github_clone_validator_isolates_selected_provider_env():
+    spec = importlib.util.spec_from_file_location(
+        "viki_validate_github_clone_live",
+        Path(__file__).resolve().parents[1] / "scripts" / "validate_github_clone_live.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+
+    isolated = module.isolate_provider_env(
+        {
+            "DASHSCOPE_API_KEY": "redacted",
+            "OPENAI_API_KEY": "should-not-pass-through",
+            "PATH": "keep-me",
+        },
+        {"provider": "dashscope", "forwarded_keys": ["DASHSCOPE_API_KEY"]},
+    )
+
+    assert isolated["DASHSCOPE_API_KEY"] == "redacted"
+    assert "OPENAI_API_KEY" not in isolated
+    assert isolated["VIKI_PROVIDER"] == "dashscope"

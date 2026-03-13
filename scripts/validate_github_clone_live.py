@@ -24,6 +24,22 @@ PROVIDER_ENV_PRIORITY = [
     ("google", ["GOOGLE_API_KEY"], ["GOOGLE_API_KEY", "VIKI_PROVIDER", "VIKI_REASONING_MODEL", "VIKI_CODING_MODEL", "VIKI_FAST_MODEL"]),
     ("ollama", ["OLLAMA_BASE_URL"], ["OLLAMA_BASE_URL", "OLLAMA_MODEL", "VIKI_PROVIDER", "VIKI_REASONING_MODEL", "VIKI_CODING_MODEL", "VIKI_FAST_MODEL"]),
 ]
+KNOWN_PROVIDER_SECRET_KEYS = {
+    "DASHSCOPE_API_KEY",
+    "OPENROUTER_API_KEY",
+    "OPENAI_API_KEY",
+    "ANTHROPIC_API_KEY",
+    "GOOGLE_API_KEY",
+    "DEEPSEEK_API_KEY",
+    "GROQ_API_KEY",
+    "MISTRAL_API_KEY",
+    "TOGETHERAI_API_KEY",
+    "FIREWORKS_API_KEY",
+    "XAI_API_KEY",
+    "CEREBRAS_API_KEY",
+    "SAMBANOVA_API_KEY",
+    "AZURE_API_KEY",
+}
 
 
 def detect_live_provider(env: dict[str, str]) -> dict[str, object]:
@@ -42,6 +58,21 @@ def detect_live_provider(env: dict[str, str]) -> dict[str, object]:
     if env.get("OPENAI_API_KEY"):
         return {"provider": "openai", "forwarded_keys": ["OPENAI_API_KEY"]}
     return {"provider": None, "forwarded_keys": []}
+
+
+def isolate_provider_env(env: dict[str, str], detected: dict[str, object]) -> dict[str, str]:
+    isolated = env.copy()
+    forwarded = set(detected.get("forwarded_keys", []))
+    for key in KNOWN_PROVIDER_SECRET_KEYS:
+        if key not in forwarded and key in isolated:
+            isolated.pop(key, None)
+    if detected.get("provider") and not isolated.get("VIKI_PROVIDER"):
+        isolated["VIKI_PROVIDER"] = str(detected["provider"])
+    if detected.get("provider") == "dashscope":
+        isolated.setdefault("DASHSCOPE_API_BASE", "https://dashscope-intl.aliyuncs.com/compatible-mode/v1")
+    if detected.get("provider") == "openrouter":
+        isolated.setdefault("OPENROUTER_API_BASE", "https://openrouter.ai/api/v1")
+    return isolated
 
 
 def copy_fixture(source: Path, target: Path) -> None:
@@ -90,6 +121,7 @@ def main() -> None:
     provider = detect_live_provider(env)
     if not provider["provider"]:
         raise RuntimeError("No live provider environment variables are available in the current session.")
+    env = isolate_provider_env(env, provider)
 
     clone_dir = output / "viki-code"
     venv_dir = output / "venv"
@@ -116,6 +148,7 @@ def main() -> None:
     copy_fixture(clone_dir / "benchmarks" / "public" / "generic_refactor" / "fixture", refactor_repo)
 
     commands.append(run_command([str(viki_bin), "--plain", "up", str(bugfix_repo), "--dry-run"], clone_dir, env, 300, security))
+    commands.append(run_command([str(viki_bin), "--plain", "up", str(refactor_repo), "--dry-run"], clone_dir, env, 300, security))
     bugfix_run = run_command(
         [
             str(viki_bin),
@@ -172,7 +205,7 @@ def main() -> None:
         "premium_help_ok": commands[5]["returncode"] == 0,
         "provider_diagnostics_ok": commands[6]["returncode"] == 0,
         "plain_doctor_ok": commands[7]["returncode"] == 0,
-        "plain_dry_run_ok": commands[8]["returncode"] == 0,
+        "plain_dry_run_ok": commands[8]["returncode"] == 0 and commands[9]["returncode"] == 0,
         "live_bugfix_ok": bugfix_run["returncode"] == 0 and "return a * b" in bugfix_content and bugfix_pytest["returncode"] == 0,
         "live_refactor_ok": refactor_run["returncode"] == 0 and "def normalize_account" in refactor_auth and "normalize_account" in refactor_service and refactor_pytest["returncode"] == 0,
         "rendered_diff_ok": bool(bugfix_session) and any("--rendered" in " ".join(item["command"]) and item["returncode"] == 0 for item in commands),
