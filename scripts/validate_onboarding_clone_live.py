@@ -202,8 +202,16 @@ def main() -> None:
     bugfix_repo = output / "generic_bugfix_repo"
     shutil.copytree(clone_dir / "benchmarks" / "public" / "generic_bugfix" / "fixture", bugfix_repo)
 
-    prompt_input = "Fix the broken calculation in this repo and make the tests pass. Run the relevant tests before you finish.\n"
-    live_result = run_powershell("viki --force-rich --theme premium", bugfix_repo, env, security, timeout=3600, input_text=prompt_input)
+    prompt_first_result = run_powershell("viki --force-rich --theme premium", bugfix_repo, env, security, timeout=1800, input_text="\n")
+    commands.append(prompt_first_result)
+
+    live_result = run_powershell(
+        "viki --force-rich --theme premium run \"The multiplication behavior is broken in this repository. Repair it and run the relevant tests before you finish.\" --path .",
+        bugfix_repo,
+        env,
+        security,
+        timeout=3600,
+    )
     commands.append(live_result)
 
     session_id = parse_session_id(str(live_result["stdout"]))
@@ -212,6 +220,7 @@ def main() -> None:
 
     commands.append(run_powershell("python -m pytest --rootdir . tests/test_calculator.py -q", bugfix_repo, env, security, timeout=600))
 
+    config_saved = config_home.joinpath("config.env").exists()
     remove_tree(config_home)
 
     summary = {
@@ -223,9 +232,9 @@ def main() -> None:
         "command_on_path_ok": commands[2]["returncode"] == 0,
         "version_ok": commands[3]["returncode"] == 0,
         "providers_ok": commands[4]["returncode"] == 0,
-        "setup_wizard_ok": commands[5]["returncode"] == 0 and config_home.joinpath("config.env").exists(),
+        "setup_wizard_ok": commands[5]["returncode"] == 0 and config_saved,
         "doctor_ok": commands[6]["returncode"] == 0,
-        "prompt_first_ok": live_result["returncode"] == 0,
+        "prompt_first_ok": prompt_first_result["returncode"] == 0 and "Prompt-First Console" in str(prompt_first_result["stdout"]),
         "live_bugfix_ok": live_result["returncode"] == 0 and "return a * b" in (bugfix_repo / "app" / "calculator.py").read_text(encoding="utf-8"),
         "rendered_diff_ok": bool(session_id) and any(" --rendered" in str(item["command"]) and item["returncode"] == 0 for item in commands),
         "pytest_ok": commands[-1]["returncode"] == 0,
