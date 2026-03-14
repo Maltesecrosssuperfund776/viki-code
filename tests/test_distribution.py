@@ -191,6 +191,33 @@ def test_onboarding_clone_validator_builds_nvidia_setup_input():
     assert setup_input.startswith("6\n1\n")
 
 
+def test_onboarding_clone_validator_isolates_nvidia_without_openai_fallback():
+    spec = importlib.util.spec_from_file_location(
+        "viki_validate_onboarding_clone_live",
+        Path(__file__).resolve().parents[1] / "scripts" / "validate_onboarding_clone_live.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+
+    isolated = module.isolate_provider_env(
+        {
+            "OPENAI_API_KEY": "redacted",
+            "OPENAI_API_BASE": "https://integrate.api.nvidia.com/v1",
+            "PATH": "keep-me",
+        },
+        {
+            "provider": "nvidia",
+            "forwarded_keys": ["OPENAI_API_KEY", "OPENAI_API_BASE"],
+        },
+    )
+
+    assert isolated["NVIDIA_API_KEY"] == "redacted"
+    assert isolated["NVIDIA_API_BASE"] == "https://integrate.api.nvidia.com/v1"
+    assert "OPENAI_API_KEY" not in isolated
+    assert isolated["VIKI_PROVIDER"] == "nvidia"
+
+
 def test_github_clone_validator_remove_tree_handles_readonly_file(tmp_path: Path):
     spec = importlib.util.spec_from_file_location(
         "viki_validate_github_clone_live",

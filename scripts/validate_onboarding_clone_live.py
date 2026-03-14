@@ -50,23 +50,24 @@ def detect_live_provider(env: dict[str, str]) -> dict[str, object]:
     nvidia_key = env.get("NVIDIA_API_KEY") or env.get("OPENAI_API_KEY")
     nvidia_base = env.get("NVIDIA_API_BASE") or env.get("OPENAI_API_BASE") or ""
     if nvidia_key and "integrate.api.nvidia.com" in nvidia_base:
+        forwarded_keys = [
+            key
+            for key in [
+                "NVIDIA_API_KEY",
+                "NVIDIA_API_BASE",
+                "OPENAI_API_KEY",
+                "OPENAI_API_BASE",
+                "OPENAI_COMPAT_MODEL",
+                "VIKI_PROVIDER",
+                "VIKI_REASONING_MODEL",
+                "VIKI_CODING_MODEL",
+                "VIKI_FAST_MODEL",
+            ]
+            if env.get(key)
+        ]
         return {
             "provider": "nvidia",
-            "forwarded_keys": [
-                key
-                for key in [
-                    "NVIDIA_API_KEY",
-                    "NVIDIA_API_BASE",
-                    "OPENAI_API_KEY",
-                    "OPENAI_API_BASE",
-                    "OPENAI_COMPAT_MODEL",
-                    "VIKI_PROVIDER",
-                    "VIKI_REASONING_MODEL",
-                    "VIKI_CODING_MODEL",
-                    "VIKI_FAST_MODEL",
-                ]
-                if env.get(key)
-            ],
+            "forwarded_keys": forwarded_keys,
         }
     preferred = env.get("VIKI_PROVIDER", "").strip().lower()
     if preferred:
@@ -94,6 +95,9 @@ def isolate_provider_env(env: dict[str, str], detected: dict[str, object]) -> di
     if detected.get("provider") == "nvidia":
         isolated.setdefault("NVIDIA_API_KEY", isolated.get("OPENAI_API_KEY", ""))
         isolated.setdefault("NVIDIA_API_BASE", isolated.get("OPENAI_API_BASE", "https://integrate.api.nvidia.com/v1"))
+        isolated.pop("OPENAI_API_KEY", None)
+        isolated.pop("OPENAI_API_BASE", None)
+        isolated["VIKI_PROVIDER"] = "nvidia"
     return isolated
 
 
@@ -198,7 +202,7 @@ def main() -> None:
     bugfix_repo = output / "generic_bugfix_repo"
     shutil.copytree(clone_dir / "benchmarks" / "public" / "generic_bugfix" / "fixture", bugfix_repo)
 
-    prompt_input = "Fix the broken calculation and make tests pass.\n"
+    prompt_input = "Fix the broken calculation in this repo and make the tests pass. Run the relevant tests before you finish.\n"
     live_result = run_powershell("viki --force-rich --theme premium", bugfix_repo, env, security, timeout=3600, input_text=prompt_input)
     commands.append(live_result)
 
@@ -207,6 +211,8 @@ def main() -> None:
         commands.append(run_powershell(f"viki --force-rich --theme premium diff {session_id} --path '{bugfix_repo}' --rendered", bugfix_repo, env, security, timeout=600))
 
     commands.append(run_powershell("python -m pytest --rootdir . tests/test_calculator.py -q", bugfix_repo, env, security, timeout=600))
+
+    remove_tree(config_home)
 
     summary = {
         "repo_url": args.repo_url,
@@ -227,6 +233,7 @@ def main() -> None:
         "whatsapp_prompt_visible": "WhatsApp" in str(commands[5]["stdout"]),
         "session_id": session_id,
         "config_home": str(config_home),
+        "config_home_removed": not config_home.exists(),
         "user_bin": str(user_bin),
     }
 
