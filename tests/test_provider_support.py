@@ -6,6 +6,7 @@ from unittest.mock import patch
 from typer.testing import CliRunner
 
 from viki.cli import app
+from viki.onboarding import get_model_profile, get_provider_preset
 from viki.providers.litellm_provider import LiteLLMProvider
 
 
@@ -69,3 +70,12 @@ def test_cli_plain_providers_command_reports_selection():
     assert "dashscope" in result.output
     assert "Coding model" in result.output
     assert "openai/qwen3-coder-next" in result.output
+
+
+def test_nvidia_onboarding_preset_maps_to_openai_compatible_transport():
+    preset = get_provider_preset("nvidia")
+    profile = get_model_profile(preset, "nim-default")
+
+    assert preset.provider_value == "openai-compatible"
+    assert preset.base_default == "https://integrate.api.nvidia.com/v1"
+    assert profile.coding == "openai/meta/llama-3.1-70b-instruct"

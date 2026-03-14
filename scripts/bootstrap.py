@@ -52,19 +52,24 @@ def bootstrap(root: Path, install_dev: bool, force_env: bool, run_server: bool, 
     run(init_cmd, cwd=root)
 
     launchers = PlatformSupport.write_local_launchers(root, python_bin)
-    print("[viki-bootstrap] launchers:")
+    user_launchers = PlatformSupport.write_user_launchers(python_bin, profile)
+    print("[viki-bootstrap] local launchers:")
     for launcher in launchers:
+        print("  -", launcher)
+    print("[viki-bootstrap] user launchers:")
+    for launcher in user_launchers:
         print("  -", launcher)
 
     if run_server:
-        run([str(python_bin), "-m", "viki.cli", "up", str(root), "--host", host, "--port", str(port)], cwd=root)
+        run([str(python_bin), "-m", "viki.cli"], cwd=root)
         return
 
-    launch_hint = f'{python_bin} -m viki.cli up "{root}" --host {host} --port {port}'
+    launch_hint = "viki"
     print("[viki-bootstrap] ready")
     print("[viki-bootstrap] platform:", profile.os_name)
     print("[viki-bootstrap] launch:", launch_hint)
     print("[viki-bootstrap] shortcut:", profile.launcher_hint)
+    print("[viki-bootstrap] first run: launch `viki` for the guided setup, or use the local launcher if your shell does not expose the user Scripts/bin directory yet.")
 
 
 if __name__ == "__main__":

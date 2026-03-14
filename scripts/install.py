@@ -6,6 +6,29 @@ import subprocess
 import sys
 from pathlib import Path
 
+from viki.platforms import PlatformSupport
+
+
+def _remove_user_launchers(root: Path) -> list[str]:
+    removed: list[str] = []
+    marker = str((root / ".venv").resolve())
+    for candidate in [
+        PlatformSupport.user_bin_dir() / "viki",
+        PlatformSupport.user_bin_dir() / "viki.cmd",
+        PlatformSupport.user_bin_dir() / "viki.ps1",
+    ]:
+        if not candidate.exists():
+            continue
+        try:
+            content = candidate.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        if marker not in content and "-m viki.cli" not in content:
+            continue
+        candidate.unlink(missing_ok=True)
+        removed.append(str(candidate))
+    return removed
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Universal VIKI installer for Windows, macOS, and Linux.")
@@ -28,6 +51,7 @@ def main() -> None:
             if target.exists():
                 shutil.rmtree(target, ignore_errors=True)
                 removed.append(str(target))
+        removed.extend(_remove_user_launchers(root))
         print({"uninstalled": True, "removed": removed})
         raise SystemExit(0)
 

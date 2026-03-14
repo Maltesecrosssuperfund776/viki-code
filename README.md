@@ -45,16 +45,16 @@ It is built for serious engineering workflows: bug-fixes, refactors, migrations,
 
 ## What You Can Do In Five Minutes
 
-- Install locally and boot the governed runtime on a real repository.
-- Ask VIKI to inspect a repo, localize likely impact, and suggest the right tests.
-- Run a real bug-fix or refactor task and review the resulting diff before accepting it.
-- Use the same session model across CLI, API, IDE, and approval workflows.
+- Install locally and launch directly into the guided VIKI setup flow.
+- Pick a provider preset, reuse a shell API key if one is already present, and save a user-level config outside the repo.
+- Let VIKI initialize the current repository safely, then ask for a real bug-fix, refactor, or repo summary in the same terminal session.
+- Carry the same session model across CLI, API, IDE, and approval workflows.
 
 ## Proof At A Glance
 
 | Signal | Current 4.1.4 evidence |
 | --- | --- |
-| Local regression suite | `69 passed` |
+| Local regression suite | `76 passed` |
 | Live validation suite | `9/9 passed` on fresh repos |
 | Generic CLI live wins | `7/7 passed` |
 | Public live benchmark slice | `8/8 passed` |
@@ -106,7 +106,15 @@ cd viki-code
 python scripts/install.py --path .
 ```
 
-Start the local API immediately after install:
+After install, launch the product entrypoint:
+
+```bash
+viki
+```
+
+VIKI now opens with a guided first-run experience. If setup is incomplete, it launches the setup wizard automatically. If setup is already complete, it drops you into a prompt-first console.
+
+Start VIKI immediately after install:
 
 ```bash
 python scripts/install.py --path . --run
@@ -137,56 +145,65 @@ docker pull ghcr.io/rebootix-research/viki-code:latest
 docker run --rm ghcr.io/rebootix-research/viki-code:latest --help
 ```
 
-## Provider Setup
+## First Launch
 
-VIKI is built around LiteLLM-backed provider routing. The current public surface is strongest with:
+The intended first successful path is:
 
-- OpenAI-compatible providers
-- Alibaba Cloud Model Studio / DashScope / Qwen
+```bash
+git clone https://github.com/rebootix-research/viki-code.git
+cd viki-code
+python scripts/install.py --path .
+viki
+```
+
+On first launch VIKI:
+
+- shows a premium welcome screen
+- detects whether provider setup is complete
+- launches the setup wizard automatically if it is not
+- saves configuration at the user level instead of writing secrets into the repo
+- initializes the current workspace safely when needed
+- drops you into a prompt-first task entry flow
+
+If you want to revisit setup explicitly, run:
+
+```bash
+viki setup
+viki setup --repair
+```
+
+## Setup Wizard And Provider Setup
+
+The guided setup flow is the primary path for normal users. It hides provider prefix syntax and offers provider presets instead:
+
+- DashScope / Qwen
+- OpenAI
 - OpenRouter
 - Anthropic
-- local Ollama
+- Azure OpenAI
+- NVIDIA via the OpenAI-compatible transport
+- Generic OpenAI-compatible endpoints
+- Ollama
 
-Recommended environment variables:
+The wizard asks for the minimum needed values, lets you reuse an API key that is already present in your shell, offers a sensible model profile, and saves the resulting config to a user-level file outside the repository.
+
+Optional setup in the same flow:
+
+- Telegram bot token and allowed chat IDs
+- WhatsApp via Twilio
+- default approval mode
+- default session style
+- default terminal theme
+
+Advanced env-based setup is still available for operators who prefer it:
 
 ```bash
-# Optional: pin the preferred backend when more than one is configured
 export VIKI_PROVIDER=dashscope
-
-# Global routing overrides
-export VIKI_REASONING_MODEL=openai/qwen3.5-plus
-export VIKI_CODING_MODEL=openai/qwen3-coder-next
-export VIKI_FAST_MODEL=openai/qwen3.5-plus
-
-# DashScope / Qwen
 export DASHSCOPE_API_KEY=...
 export DASHSCOPE_API_BASE=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
-```
-
-OpenRouter example:
-
-```bash
-export VIKI_PROVIDER=openrouter
-export OPENROUTER_API_KEY=...
-export OPENROUTER_API_BASE=https://openrouter.ai/api/v1
-export VIKI_CODING_MODEL=openrouter/deepseek/deepseek-chat
-```
-
-Generic OpenAI-compatible endpoint example:
-
-```bash
-export VIKI_PROVIDER=openai-compatible
-export OPENAI_API_KEY=...
-export OPENAI_API_BASE=https://your-compatible-endpoint.example/v1
-export OPENAI_COMPAT_MODEL=openai/gpt-4o-mini
-```
-
-Anthropic example:
-
-```bash
-export VIKI_PROVIDER=anthropic
-export ANTHROPIC_API_KEY=...
-export VIKI_CODING_MODEL=claude-3-5-sonnet-latest
+export VIKI_CODING_MODEL=openai/qwen3-coder-next
+viki providers
+viki doctor .
 ```
 
 PowerShell example:
@@ -200,8 +217,6 @@ viki providers
 viki doctor .
 ```
 
-Use `viki providers` to inspect the selected backend, fallback order, required environment variables, and model routing before you run a live task.
-
 ## Quick Start
 
 Installed launcher locations:
@@ -212,13 +227,20 @@ Windows CMD:   .viki-workspace\bin\viki-local.cmd
 PowerShell:    .viki-workspace\bin\viki-local.ps1
 ```
 
-Typical first-run flow:
+Typical prompt-first flow after installation:
 
 ```bash
-viki version
-viki doctor .
-viki up . --dry-run
+viki
+# choose provider preset in the wizard if needed
+# then enter a task at the `viki>` prompt
+```
+
+Explicit task commands still work:
+
+```bash
 viki run "Fix the broken calculation and run the relevant tests" --path .
+viki status .
+viki diff <session_id> --path . --rendered
 ```
 
 PowerShell-friendly first run:
@@ -227,24 +249,26 @@ PowerShell-friendly first run:
 git clone https://github.com/rebootix-research/viki-code.git
 cd viki-code
 python scripts/install.py --path .
-.\.viki-workspace\bin\viki-local.ps1 providers
-.\.viki-workspace\bin\viki-local.ps1 doctor .
-.\.viki-workspace\bin\viki-local.ps1 run "Fix the broken calculation and make tests pass" --path .
+viki
 ```
 
 ## Terminal Experience
 
-VIKI ships with a premium terminal presentation layer for interactive use. In a capable terminal it renders a branded banner, session header, repo and branch context, provider and model strip, agent activity tables, approval panels, and readable diff previews.
+VIKI ships with a premium terminal presentation layer for interactive use. In a capable terminal it renders a branded banner, session header, repo and branch context, provider and model strip, setup summaries, agent activity tables, approval panels, and readable diff previews.
 
 - Default interactive theme: `premium`
 - Alternate high-contrast theme: `contrast`
 - Plain fallback: automatic in CI, non-interactive shells, and minimal terminals
 - Explicit plain mode: `viki --plain ...`
 - Forced themed capture for transcripts or screenshots: `viki --force-rich ...`
+- Guided first run: `viki`
+- Explicit onboarding: `viki setup`
 
 Examples:
 
 ```bash
+viki
+viki setup
 viki --theme premium doctor .
 viki --theme premium providers
 viki --theme premium run "Fix the broken calculation and make tests pass" --path .

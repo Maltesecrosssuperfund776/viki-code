@@ -351,6 +351,65 @@ class TerminalUI:
             table.add_row(left, right)
         self.console.print(Panel(table, border_style="viki.border", box=box.ROUNDED))
 
+    def render_setup_summary(
+        self,
+        *,
+        configured: Iterable[tuple[str, str]],
+        optional: Iterable[tuple[str, str]] = (),
+        config_path: Path | None = None,
+    ) -> None:
+        self.section("Setup Summary")
+        table = Table(expand=True)
+        table.add_column("Area")
+        table.add_column("Status")
+        for label, value in configured:
+            table.add_row(label, value)
+        self.render_table(table)
+        if optional:
+            optional_table = Table(expand=True)
+            optional_table.add_column("Optional")
+            optional_table.add_column("State")
+            for label, value in optional:
+                optional_table.add_row(label, value)
+            self.render_table(optional_table, title="Optional Integrations")
+        if config_path:
+            self.info(f"Saved user-level configuration to {config_path}")
+
+    def render_hint_strip(self, hints: Iterable[str], *, title: str = "Next") -> None:
+        items = [item.strip() for item in hints if item.strip()]
+        if not items:
+            return
+        if self.plain:
+            self.console.print(f"{title}:")
+            for item in items:
+                self.console.print(f"- {item}")
+            return
+        body = Text()
+        for index, item in enumerate(items):
+            if index:
+                body.append("  •  ", style="viki.accent_soft")
+            body.append(item, style="viki.text")
+        self.console.print(
+            Panel(
+                body,
+                title=f"[viki.accent]{title}[/viki.accent]",
+                border_style="viki.border",
+                box=box.ROUNDED,
+            )
+        )
+
+    def render_choice_menu(self, title: str, choices: Iterable[tuple[str, str]]) -> None:
+        items = list(choices)
+        if not items:
+            return
+        self.section(title)
+        table = Table(expand=True)
+        table.add_column("#", width=4)
+        table.add_column("Choice")
+        for number, label in items:
+            table.add_row(number, label)
+        self.render_table(table)
+
     def _kv_text(self, label: str, value: str, value_style: str | None = None) -> Text:
         text = Text()
         text.append(f"{label.upper()} ", style="viki.badge.label")

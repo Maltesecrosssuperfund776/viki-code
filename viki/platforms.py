@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import platform
 import shutil
+import site
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath, PureWindowsPath
 
@@ -91,6 +92,44 @@ class PlatformSupport:
         written.append(str(cmd_launcher))
 
         ps_launcher = bin_dir / "viki-local.ps1"
+        ps_launcher.write_text(
+            f'& "{python_bin}" -m viki.cli @args\n',
+            encoding="utf-8",
+        )
+        written.append(str(ps_launcher))
+        return written
+
+    @staticmethod
+    def user_bin_dir(profile: PlatformProfile | None = None) -> Path:
+        active = profile or PlatformSupport.current()
+        base = Path(site.getuserbase())
+        return base / ("Scripts" if active.family == "windows" else "bin")
+
+    @staticmethod
+    def write_user_launchers(python_bin: Path, profile: PlatformProfile | None = None) -> list[str]:
+        active = profile or PlatformSupport.current()
+        bin_dir = PlatformSupport.user_bin_dir(active)
+        bin_dir.mkdir(parents=True, exist_ok=True)
+        written: list[str] = []
+
+        unix_launcher = bin_dir / "viki"
+        unix_launcher.write_text(
+            "#!/usr/bin/env sh\n"
+            f'"{python_bin}" -m viki.cli "$@"\n',
+            encoding="utf-8",
+        )
+        unix_launcher.chmod(0o755)
+        written.append(str(unix_launcher))
+
+        cmd_launcher = bin_dir / "viki.cmd"
+        cmd_launcher.write_text(
+            "@echo off\r\n"
+            f'"{python_bin}" -m viki.cli %*\r\n',
+            encoding="utf-8",
+        )
+        written.append(str(cmd_launcher))
+
+        ps_launcher = bin_dir / "viki.ps1"
         ps_launcher.write_text(
             f'& "{python_bin}" -m viki.cli @args\n',
             encoding="utf-8",

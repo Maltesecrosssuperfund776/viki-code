@@ -6,7 +6,7 @@ import subprocess
 import sys
 import warnings
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 warnings.filterwarnings(
     "ignore",
@@ -15,11 +15,12 @@ warnings.filterwarnings(
 
 import typer
 import uvicorn
+from click.exceptions import Abort as ClickAbort
 from rich.table import Table
 
 from . import __version__
 from .api.server import create_app
-from .config import settings
+from .config import refresh_settings, settings, user_config_path, write_user_config
 from .core.hive import HiveMind
 from .core.repo_index import RepoIndex
 from .evals.suite import BenchmarkSuite
@@ -30,6 +31,7 @@ from .infrastructure.observability import setup_logging, start_metrics_server
 from .infrastructure.security import ContainerRuntimeProbe
 from .integrations.telegram import TelegramBotClient
 from .integrations.whatsapp import TwilioWhatsAppClient
+from .onboarding import build_provider_env, get_model_profile, get_provider_preset, iter_provider_presets, onboarding_state
 from .platforms import PlatformSupport
 from .providers.litellm_provider import LiteLLMProvider
 from .skills.factory import AutoSkillFactory
@@ -37,7 +39,7 @@ from .skills.package import SkillPackageManager
 from .skills.registry import SkillRegistry
 from .ui.cli_theme import PALETTES, create_terminal_ui
 
-app = typer.Typer(help="VIKI Code - production-oriented swarm coding system")
+app = typer.Typer(help="VIKI Code - production-oriented swarm coding system", invoke_without_command=True, no_args_is_help=False)
 skills_app = typer.Typer(help="Manage VIKI skills")
 approvals_app = typer.Typer(help="Review approval queue")
 ide_app = typer.Typer(help="IDE integration commands")
@@ -67,11 +69,15 @@ def _configure_terminal_ui(plain_requested: bool, theme_name: str, force_rich: b
 
 @app.callback()
 def _main_callback(
+    ctx: typer.Context,
     plain: bool = typer.Option(False, "--plain", help="Render plain terminal output without color or panels."),
-    theme: str = typer.Option("premium", "--theme", help="CLI theme to use. Supported: premium, contrast."),
+    theme: str = typer.Option(settings.viki_theme or "premium", "--theme", help="CLI theme to use. Supported: premium, contrast."),
     force_rich: bool = typer.Option(False, "--force-rich", help="Force themed terminal rendering even when output is captured."),
 ):
     _configure_terminal_ui(plain, theme, force_rich=force_rich)
+    if ctx.invoked_subcommand is None:
+        _launch_default_entry(_workspace_root(Path(".")))
+        raise typer.Exit()
 
 
 def _workspace_root(path: Path) -> Path:
@@ -208,198 +214,243 @@ def _render_cli_header(
     )
 
 
-def _db_for_root(root: Path) -> DatabaseManager:
-    return DatabaseManager(str(root / settings.workspace_dir / "viki.db"))
+def _prompt_choice(title: str, options: list[tuple[str, str]], *, default_index: int = 1) -> int:
+    ui.render_choice_menu(title, [(str(index + 1), label) for index, (label, _) in enumerate(options)])
+    response = typer.prompt("Select an option", default=str(default_index)).strip()
+    try:
+        selected = int(response)
+    except ValueError as exc:
+        raise typer.BadParameter("Please enter a valid number.") from exc
+    if selected < 1 or selected > len(options):
+        raise typer.BadParameter("That choice is out of range.")
+    return selected - 1
 
 
-def _ensure_initialized(root: Path, force_env: bool = False) -> Path:
-    workspace = settings.ensure_workspace(root)
-    env_path = root / ".env"
-    if force_env or not env_path.exists():
-        env_path.write_text(_env_template(root / settings.workspace_dir / "viki.db"), encoding="utf-8")
-    return workspace
+def _prompt_text(label: str, *, default: str | None = None, secret: bool = False, allow_empty: bool = False) -> str:
+    if secret:
+        value = typer.prompt(label, hide_input=True).strip()
+    else:
+        value = typer.prompt(label, default=default or "", show_default=bool(default)).strip()
+    if value:
+        return value.strip()
+    if default is not None and not secret:
+        return default
+    if allow_empty:
+        return ""
+    raise typer.BadParameter(f"{label} is required.")
 
 
-def _env_template(workspace_db: Path) -> str:
-    return f"""# VIKI routing
-VIKI_PROVIDER=
-VIKI_REASONING_MODEL=
-VIKI_CODING_MODEL=
-VIKI_FAST_MODEL=
+def _setup_provider_configuration() -> tuple[dict[str, str], dict[str, str]]:
+    presets = list(iter_provider_presets())
+    index = _prompt_choice(
+        "Choose your default AI provider",
+        [(f"{preset.label} — {preset.description}", preset.slug) for preset in presets],
+        default_index=1,
+    )
+    preset = presets[index]
+    ui.info(f"{preset.label}: {preset.description}")
+    if preset.notes:
+        ui.info(preset.notes)
 
-# Primary providers
-DASHSCOPE_API_KEY=
-DASHSCOPE_API_BASE={settings.dashscope_api_base}
-OPENROUTER_API_KEY=
-OPENROUTER_API_BASE=https://openrouter.ai/api/v1
-OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-GOOGLE_API_KEY=
-DEEPSEEK_API_KEY=
-GROQ_API_KEY=
-MISTRAL_API_KEY=
-TOGETHERAI_API_KEY=
-FIREWORKS_API_KEY=
-XAI_API_KEY=
-CEREBRAS_API_KEY=
-SAMBANOVA_API_KEY=
-AZURE_API_KEY=
-AZURE_API_BASE=
-AZURE_API_VERSION=
-OPENAI_API_BASE=
-OPENAI_COMPAT_MODEL=
-OLLAMA_BASE_URL=
-OLLAMA_MODEL=
+    profile_index = _prompt_choice(
+        f"Choose a {preset.label} model profile",
+        [(f"{profile.label} — {profile.summary}", profile.slug) for profile in preset.model_profiles],
+        default_index=1,
+    )
+    profile = preset.model_profiles[profile_index]
 
-# Runtime
-SANDBOX_ENABLED=true
-MAX_COST_PER_TASK_USD=10
-LOG_LEVEL=INFO
-APPROVAL_MODE=auto
-API_HOST={settings.api_host}
-API_PORT={settings.api_port}
-DATABASE_URL=sqlite:///{workspace_db}
+    secret_value: str | None = None
+    if preset.secret_env:
+        env_secret = str(getattr(settings, preset.secret_env.lower(), None) or "").strip()
+        if env_secret and typer.confirm(f"Use the existing {preset.secret_env} from this shell?", default=True):
+            secret_value = env_secret
+        else:
+            secret_value = _prompt_text(f"{preset.label} API key", secret=True)
 
-# Telegram
-TELEGRAM_ENABLED=false
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_WEBHOOK_SECRET=
-TELEGRAM_ALLOWED_CHAT_IDS=
+    base_value: str | None = None
+    if preset.base_env:
+        current_base = getattr(settings, preset.base_env.lower(), None) or preset.base_default or ""
+        base_value = _prompt_text(f"{preset.label} base URL", default=str(current_base) if current_base else None, allow_empty=False)
 
-# WhatsApp via Twilio
-WHATSAPP_ENABLED=false
-WHATSAPP_ACCOUNT_SID=
-WHATSAPP_AUTH_TOKEN=
-WHATSAPP_FROM_NUMBER=whatsapp:+0000000000
-WHATSAPP_ALLOWED_SENDERS=
-WHATSAPP_VALIDATE_SIGNATURE=true
-WHATSAPP_WEBHOOK_URL=
-"""
+    azure_api_version: str | None = None
+    if preset.slug == "azure-openai":
+        azure_api_version = _prompt_text("Azure API version", default=settings.azure_api_version or "2024-02-01-preview")
+
+    config = build_provider_env(
+        preset,
+        profile,
+        secret_value=secret_value,
+        base_value=base_value,
+        azure_api_version=azure_api_version,
+    )
+    summary = {
+        "Provider": preset.label,
+        "Model profile": profile.label,
+        "Reasoning": profile.reasoning,
+        "Coding": profile.coding,
+        "Fast": profile.fast,
+    }
+    return config, summary
 
 
-@app.command()
-def init(path: Path = typer.Argument(Path('.'), help="Workspace root"), force: bool = typer.Option(False, "--force", "-f")):
-    root = _workspace_root(path)
-    _render_cli_header("Workspace Setup", root=root, autonomy_mode="bootstrap", validation_state="ready")
-    workspace = root / settings.workspace_dir
-    if workspace.exists() and not force:
-        ui.warning("Workspace already initialized. Use --force to regenerate the template.")
-        raise typer.Exit(1)
-    workspace = _ensure_initialized(root, force_env=force)
-    ui.success(f"Initialized VIKI workspace at {workspace}")
-    ui.info("Export provider env vars or edit .env, then run: viki doctor")
+def _setup_integrations() -> tuple[dict[str, str], list[tuple[str, str]]]:
+    updates: dict[str, str] = {
+        "TELEGRAM_ENABLED": "false",
+        "WHATSAPP_ENABLED": "false",
+    }
+    optional: list[tuple[str, str]] = []
+
+    ui.section("Optional Messaging Integrations")
+    ui.info("Telegram and WhatsApp are optional. You can skip them now and add them later with `viki setup --repair`.")
+
+    if typer.confirm("Configure Telegram bot access now?", default=False):
+        token = _prompt_text("Telegram bot token", secret=True)
+        chat_ids = _prompt_text("Allowed Telegram chat IDs (comma-separated, optional)", default="", allow_empty=True)
+        secret = _prompt_text("Telegram webhook secret (optional)", default="", allow_empty=True)
+        updates.update(
+            {
+                "TELEGRAM_ENABLED": "true",
+                "TELEGRAM_BOT_TOKEN": token,
+                "TELEGRAM_ALLOWED_CHAT_IDS": chat_ids,
+                "TELEGRAM_WEBHOOK_SECRET": secret,
+            }
+        )
+        optional.append(("Telegram", "configured"))
+    else:
+        optional.append(("Telegram", "skipped"))
+
+    if typer.confirm("Configure WhatsApp via Twilio now?", default=False):
+        updates.update(
+            {
+                "WHATSAPP_ENABLED": "true",
+                "WHATSAPP_ACCOUNT_SID": _prompt_text("Twilio account SID"),
+                "WHATSAPP_AUTH_TOKEN": _prompt_text("Twilio auth token", secret=True),
+                "WHATSAPP_FROM_NUMBER": _prompt_text("WhatsApp from number", default="whatsapp:+0000000000"),
+                "WHATSAPP_ALLOWED_SENDERS": _prompt_text("Allowed senders (comma-separated, optional)", default="", allow_empty=True),
+                "WHATSAPP_WEBHOOK_URL": _prompt_text("Webhook URL (optional)", default="", allow_empty=True),
+            }
+        )
+        optional.append(("WhatsApp", "configured"))
+    else:
+        optional.append(("WhatsApp", "skipped"))
+    return updates, optional
 
 
-@app.command()
-def up(
-    path: Path = typer.Argument(Path('.'), help="Workspace root"),
-    host: str = typer.Option(settings.api_host, "--host"),
-    port: int = typer.Option(settings.api_port, "--port"),
-    force_env: bool = typer.Option(False, "--force-env", help="Rewrite .env template before starting"),
-    dry_run: bool = typer.Option(False, "--dry-run", help="Prepare workspace without starting the API server"),
-):
-    root = _workspace_root(path)
-    _render_cli_header("Workspace Runtime", root=root, autonomy_mode="up", validation_state="ready")
-    workspace = _ensure_initialized(root, force_env=force_env)
-    PlatformSupport.write_local_launchers(root, Path(sys.executable).resolve())
-    ui.success(f"VIKI workspace ready at {workspace}")
-    if dry_run:
-        ui.info(f"Dry run complete. Start with: viki up {root}")
+def _setup_preferences() -> tuple[dict[str, str], list[tuple[str, str]]]:
+    theme_index = _prompt_choice(
+        "Choose the default terminal theme",
+        [
+            ("Premium — dark-tech, polished interactive terminal UI", "premium"),
+            ("Contrast — stronger contrast for some terminals", "contrast"),
+        ],
+        default_index=1,
+    )
+    theme_value = ["premium", "contrast"][theme_index]
+
+    approval_index = _prompt_choice(
+        "Choose the default approval mode",
+        [
+            ("Auto — only high-risk actions pause for approval", "auto"),
+            ("Strict — ask for approval more aggressively", "strict"),
+        ],
+        default_index=1 if settings.approval_mode != "strict" else 2,
+    )
+    approval_value = ["auto", "strict"][approval_index]
+
+    mode_index = _prompt_choice(
+        "Choose the default session style",
+        [
+            ("Standard — balanced prompt-first workflow", "standard"),
+            ("Careful — label sessions as more review-oriented", "careful"),
+        ],
+        default_index=1 if settings.default_run_mode != "careful" else 2,
+    )
+    mode_value = ["standard", "careful"][mode_index]
+
+    updates = {
+        "VIKI_THEME": theme_value,
+        "APPROVAL_MODE": approval_value,
+        "VIKI_DEFAULT_RUN_MODE": mode_value,
+    }
+    summary = [
+        ("Theme", theme_value),
+        ("Approvals", approval_value),
+        ("Session style", mode_value),
+    ]
+    return updates, summary
+
+
+def _run_setup_wizard(root: Path, *, title: str = "Setup Wizard", continue_to_prompt: bool = False) -> dict[str, Any]:
+    _render_cli_header(title, root=root, provider=LiteLLMProvider(), autonomy_mode="setup", validation_state="guided")
+    ui.render_hint_strip(
+        [
+            "Choose one provider preset",
+            "Save user-level config outside the repo",
+            "Optionally configure Telegram or WhatsApp",
+            "Start using VIKI immediately afterward",
+        ],
+        title="What this wizard will do",
+    )
+    provider_updates, provider_summary = _setup_provider_configuration()
+    preference_updates, preference_summary = _setup_preferences()
+    integration_updates, integration_summary = _setup_integrations()
+
+    config_path = write_user_config({**provider_updates, **preference_updates, **integration_updates})
+    refresh_settings()
+    provider = LiteLLMProvider()
+    configured = list(provider_summary.items()) + preference_summary
+    optional = integration_summary + [("Workspace", "ready" if (root / settings.workspace_dir).exists() else "will initialize on first run")]
+    ui.render_setup_summary(configured=configured, optional=optional, config_path=config_path)
+    if provider.validate_config():
+        ui.success("Provider routing is ready.")
+    else:
+        ui.warning("Setup was saved, but the provider still looks incomplete. Re-run `viki setup --repair` if needed.")
+    ui.render_hint_strip(
+        [
+            "Run `viki` for the prompt-first experience",
+            "Run `viki doctor .` to review routing and runtime checks",
+            "Run `viki providers` to inspect fallback order and model slots",
+        ]
+    )
+    return {
+        "config_path": str(config_path),
+        "provider_ready": provider.validate_config(),
+        "continue_to_prompt": continue_to_prompt,
+    }
+
+
+def _ensure_workspace_ready(root: Path) -> None:
+    if (root / settings.workspace_dir).exists():
         return
-    ui.info(f"Starting VIKI API on http://{host}:{port}")
-    app_instance = create_app(root)
-    uvicorn.run(app_instance, host=host, port=port)
+    ui.warning("No VIKI workspace was found here, so VIKI is initializing this directory now.")
+    _ensure_initialized(root)
+    ui.success(f"Workspace initialized at {root / settings.workspace_dir}")
 
 
-@app.command()
-def doctor(path: Path = typer.Argument(Path('.'), help="Workspace root")):
-    root = _workspace_root(path)
-    setup_logging(settings.log_level, settings.structured_logging)
-    provider = LiteLLMProvider()
-    _render_cli_header("Doctor", root=root, provider=provider, autonomy_mode="diagnostic", validation_state="checks")
-    profile = PlatformSupport.current()
-    table = Table(title="VIKI Doctor")
-    table.add_column("Check")
-    table.add_column("Status")
-
-    workspace = root / settings.workspace_dir
-    table.add_row("Workspace", "OK" if workspace.exists() else "Missing")
-    table.add_row("Platform", profile.os_name)
-    table.add_row("Shell", profile.shell)
-    diagnostics = _provider_diagnostics(provider)
-    table.add_row("LiteLLM", "OK" if provider._available else "Missing")
-    table.add_row("Providers", ", ".join(diagnostics.get("configured_backends", [])) or "No API backend configured")
-    table.add_row("Selected provider", diagnostics.get("selected_provider") or "auto")
-
+def _interactive_setup_repair(root: Path) -> LiteLLMProvider:
+    ui.warning("Provider setup is incomplete. Launching the guided setup flow.")
     try:
-        import docker
-        client = docker.from_env()
-        client.ping()
-        docker_status = "OK"
-    except Exception:
-        docker_status = "Unavailable"
-    table.add_row("Docker", docker_status)
-
-    try:
-        subprocess.run(["git", "--version"], capture_output=True, check=True)
-        git_status = "OK"
-    except Exception:
-        git_status = "Unavailable"
-    table.add_row("Git", git_status)
-    runtimes = ContainerRuntimeProbe().probe_all()
-    best_runtime = ContainerRuntimeProbe().best_available(runtimes)
-    table.add_row("Isolation runtime", f"{best_runtime.name}:{best_runtime.detail}" if best_runtime else "None available")
-
-    registry = SkillRegistry(root)
-    table.add_row("Skills", str(len(registry.list_skills())))
-    table.add_row("Approvals", settings.approval_mode)
-    table.add_row("API", f"{settings.api_host}:{settings.api_port}")
-    table.add_row("Launcher", profile.launcher_hint)
-    ui.render_table(table)
-    _render_provider_overview(provider)
-
-
-@app.command("providers")
-def providers_status():
-    provider = LiteLLMProvider()
-    _render_cli_header("Providers", root=Path("."), provider=provider, autonomy_mode="provider-routing", validation_state="diagnostic")
-    _render_provider_overview(provider)
-
-
-@app.command("platforms")
-def platform_info():
-    profile = PlatformSupport.current()
-    ui.banner(__version__)
-    table = Table(title="VIKI Platform Support")
-    table.add_column("Field")
-    table.add_column("Value")
-    table.add_row("OS", profile.os_name)
-    table.add_row("Family", profile.family)
-    table.add_row("Shell", profile.shell)
-    table.add_row("Python", profile.python_executable)
-    table.add_row("Venv Python", profile.venv_python)
-    table.add_row("Launcher", profile.launcher_name)
-    table.add_row("Shortcut", profile.launcher_hint)
-    ui.render_table(table)
-
-
-@app.command()
-def version():
-    console.print(__version__)
-
-
-@app.command()
-def run(
-    prompt: str = typer.Argument(..., help="Task for VIKI"),
-    mode: str = typer.Option("standard", "--mode", "-m"),
-    path: Path = typer.Option(Path('.'), "--path", help="Workspace root"),
-    detach: bool = typer.Option(False, "--detach", "-d"),
-    background_child: bool = typer.Option(False, "--background-child", hidden=True),
-):
-    root = _workspace_root(path)
-    if not (root / settings.workspace_dir).exists():
-        ui.error("Workspace not initialized. Run 'viki init' first.")
+        _run_setup_wizard(root, title="Repair Setup")
+    except (EOFError, KeyboardInterrupt, ClickAbort):
+        ui.error("Setup was cancelled before a provider was configured.")
         raise typer.Exit(1)
+    provider = LiteLLMProvider()
+    if not provider.validate_config():
+        ui.error("Provider setup is still incomplete. Run `viki setup` to repair it.")
+        _render_provider_overview(provider)
+        raise typer.Exit(1)
+    return provider
+
+
+def _run_live_session(
+    prompt: str,
+    *,
+    root: Path,
+    mode: str,
+    detach: bool = False,
+    background_child: bool = False,
+) -> None:
+    _ensure_workspace_ready(root)
 
     if detach and not background_child:
         cmd = [sys.executable, "-m", "viki.cli", "run", prompt, "--mode", mode, "--path", str(root), "--background-child"]
@@ -412,11 +463,10 @@ def run(
     if settings.metrics_enabled:
         start_metrics_server(settings.metrics_port)
     provider = LiteLLMProvider()
-    _render_cli_header("Live Session", root=root, provider=provider, autonomy_mode=mode, validation_state="pending")
     if not provider.validate_config():
-        ui.error("No provider configuration detected. Export provider env vars or configure .env before running live tasks.")
-        _render_provider_overview(provider)
-        raise typer.Exit(1)
+        provider = _interactive_setup_repair(root)
+
+    _render_cli_header("Live Session", root=root, provider=provider, autonomy_mode=mode, validation_state="pending")
 
     async def main():
         hive = HiveMind(provider, str(root))
@@ -465,6 +515,283 @@ def run(
     except Exception as exc:
         ui.error(f"VIKI run failed: {exc}")
         raise typer.Exit(1)
+
+
+def _launch_default_entry(root: Path) -> None:
+    state = onboarding_state(root)
+    provider = LiteLLMProvider()
+    _render_cli_header("Welcome", root=root, provider=provider, autonomy_mode=settings.default_run_mode, validation_state="ready")
+    ui.render_hint_strip(
+        [
+            "Ask VIKI to inspect, fix, refactor, or summarize code",
+            "Use `viki setup` to revisit providers, defaults, or messaging",
+            "Use `viki status`, `viki diff`, or `viki approvals` for session review",
+        ],
+        title="What you can do now",
+    )
+
+    if not state["config_exists"] or not state["provider_ready"]:
+        ui.warning("Setup is incomplete, so VIKI will guide you through provider and messaging setup first.")
+        try:
+            _run_setup_wizard(root, continue_to_prompt=True)
+        except (EOFError, KeyboardInterrupt, ClickAbort):
+            ui.info("Run `viki setup` in an interactive terminal to complete onboarding.")
+            return
+        provider = LiteLLMProvider()
+    elif not provider.validate_config():
+        provider = _interactive_setup_repair(root)
+
+    _ensure_workspace_ready(root)
+    _render_cli_header("Prompt-First Console", root=root, provider=provider, autonomy_mode=settings.default_run_mode, validation_state="ready")
+    ui.render_hint_strip(
+        [
+            "Examples: Fix the broken calculation and make tests pass",
+            "Refactor auth naming consistently and keep behavior green",
+            "Inspect this repo and summarize the next safe step",
+        ],
+        title="Prompt ideas",
+    )
+
+    try:
+        prompt = typer.prompt("viki>", default="", show_default=False).strip()
+    except (EOFError, KeyboardInterrupt, ClickAbort):
+        ui.info("VIKI is configured. Run `viki` again in an interactive terminal or use `viki run \"...\"`.")
+        return
+
+    if not prompt:
+        ui.info("No task entered. Use `viki run \"...\"` or run `viki` again when you are ready.")
+        return
+    _run_live_session(prompt, root=root, mode=settings.default_run_mode, detach=False, background_child=False)
+
+
+def _db_for_root(root: Path) -> DatabaseManager:
+    return DatabaseManager(str(root / settings.workspace_dir / "viki.db"))
+
+
+def _ensure_initialized(root: Path, force_env: bool = False) -> Path:
+    workspace = settings.ensure_workspace(root)
+    env_path = root / ".env"
+    if force_env or not env_path.exists():
+        env_path.write_text(_env_template(root / settings.workspace_dir / "viki.db"), encoding="utf-8")
+    return workspace
+
+
+def _env_template(workspace_db: Path) -> str:
+    return f"""# VIKI routing
+VIKI_PROVIDER=
+VIKI_THEME={settings.viki_theme}
+VIKI_DEFAULT_RUN_MODE={settings.default_run_mode}
+VIKI_REASONING_MODEL=
+VIKI_CODING_MODEL=
+VIKI_FAST_MODEL=
+
+# Primary providers
+DASHSCOPE_API_KEY=
+DASHSCOPE_API_BASE={settings.dashscope_api_base}
+OPENROUTER_API_KEY=
+OPENROUTER_API_BASE=https://openrouter.ai/api/v1
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+NVIDIA_API_KEY=
+NVIDIA_API_BASE=https://integrate.api.nvidia.com/v1
+GOOGLE_API_KEY=
+DEEPSEEK_API_KEY=
+GROQ_API_KEY=
+MISTRAL_API_KEY=
+TOGETHERAI_API_KEY=
+FIREWORKS_API_KEY=
+XAI_API_KEY=
+CEREBRAS_API_KEY=
+SAMBANOVA_API_KEY=
+AZURE_API_KEY=
+AZURE_API_BASE=
+AZURE_API_VERSION=
+OPENAI_API_BASE=
+OPENAI_COMPAT_MODEL=
+OLLAMA_BASE_URL=
+OLLAMA_MODEL=
+
+# Runtime
+SANDBOX_ENABLED=true
+MAX_COST_PER_TASK_USD=10
+LOG_LEVEL=INFO
+APPROVAL_MODE=auto
+API_HOST={settings.api_host}
+API_PORT={settings.api_port}
+DATABASE_URL=sqlite:///{workspace_db}
+
+# Telegram
+TELEGRAM_ENABLED=false
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_WEBHOOK_SECRET=
+TELEGRAM_ALLOWED_CHAT_IDS=
+
+# WhatsApp via Twilio
+WHATSAPP_ENABLED=false
+WHATSAPP_ACCOUNT_SID=
+WHATSAPP_AUTH_TOKEN=
+WHATSAPP_FROM_NUMBER=whatsapp:+0000000000
+WHATSAPP_ALLOWED_SENDERS=
+WHATSAPP_VALIDATE_SIGNATURE=true
+WHATSAPP_WEBHOOK_URL=
+"""
+
+
+@app.command()
+def setup(
+    path: Path = typer.Argument(Path("."), help="Workspace root"),
+    repair: bool = typer.Option(False, "--repair", help="Re-run the guided setup even if VIKI is already configured."),
+):
+    root = _workspace_root(path)
+    state = onboarding_state(root)
+    if state["config_exists"] and state["provider_ready"] and not repair:
+        _render_cli_header("Setup", root=root, provider=LiteLLMProvider(), autonomy_mode="setup", validation_state="configured")
+        ui.success("VIKI already has user-level provider configuration.")
+        ui.render_setup_summary(
+            configured=[
+                ("Provider", str(state["provider_value"])),
+                ("Theme", str(state["theme"])),
+                ("Approvals", str(state["approval_mode"])),
+                ("Session style", str(state["run_mode"])),
+            ],
+            optional=[
+                ("Telegram", "configured" if state["telegram_enabled"] else "optional"),
+                ("WhatsApp", "configured" if state["whatsapp_enabled"] else "optional"),
+            ],
+            config_path=user_config_path(),
+        )
+        ui.info("Use `viki setup --repair` to change providers, messaging, or defaults.")
+        return
+    _run_setup_wizard(root)
+
+
+@app.command()
+def init(path: Path = typer.Argument(Path('.'), help="Workspace root"), force: bool = typer.Option(False, "--force", "-f")):
+    root = _workspace_root(path)
+    _render_cli_header("Workspace Setup", root=root, autonomy_mode="bootstrap", validation_state="ready")
+    workspace = root / settings.workspace_dir
+    if workspace.exists() and not force:
+        ui.warning("Workspace already initialized. Use --force to regenerate the template.")
+        raise typer.Exit(1)
+    workspace = _ensure_initialized(root, force_env=force)
+    ui.success(f"Initialized VIKI workspace at {workspace}")
+    ui.info("Run `viki` for the guided first-run experience or `viki doctor .` for diagnostics.")
+
+
+@app.command()
+def up(
+    path: Path = typer.Argument(Path('.'), help="Workspace root"),
+    host: str = typer.Option(settings.api_host, "--host"),
+    port: int = typer.Option(settings.api_port, "--port"),
+    force_env: bool = typer.Option(False, "--force-env", help="Rewrite .env template before starting"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Prepare workspace without starting the API server"),
+):
+    root = _workspace_root(path)
+    _render_cli_header("Workspace Runtime", root=root, autonomy_mode="up", validation_state="ready")
+    workspace = _ensure_initialized(root, force_env=force_env)
+    PlatformSupport.write_local_launchers(root, Path(sys.executable).resolve())
+    ui.success(f"VIKI workspace ready at {workspace}")
+    if dry_run:
+        ui.info("Dry run complete. Start with `viki` for the prompt-first experience or `viki up .` for the local API runtime.")
+        return
+    ui.info(f"Starting VIKI API on http://{host}:{port}")
+    app_instance = create_app(root)
+    uvicorn.run(app_instance, host=host, port=port)
+
+
+@app.command()
+def doctor(path: Path = typer.Argument(Path('.'), help="Workspace root")):
+    root = _workspace_root(path)
+    setup_logging(settings.log_level, settings.structured_logging)
+    provider = LiteLLMProvider()
+    _render_cli_header("Doctor", root=root, provider=provider, autonomy_mode="diagnostic", validation_state="checks")
+    state = onboarding_state(root)
+    profile = PlatformSupport.current()
+    table = Table(title="VIKI Doctor")
+    table.add_column("Check")
+    table.add_column("Status")
+
+    workspace = root / settings.workspace_dir
+    table.add_row("Workspace", "OK" if workspace.exists() else "Missing")
+    table.add_row("User config", str(user_config_path()))
+    table.add_row("Setup state", "Ready" if state["provider_ready"] else "Needs provider setup")
+    table.add_row("Platform", profile.os_name)
+    table.add_row("Shell", profile.shell)
+    diagnostics = _provider_diagnostics(provider)
+    table.add_row("LiteLLM", "OK" if provider._available else "Missing")
+    table.add_row("Providers", ", ".join(diagnostics.get("configured_backends", [])) or "No API backend configured")
+    table.add_row("Selected provider", diagnostics.get("selected_provider") or "auto")
+
+    try:
+        import docker
+        client = docker.from_env()
+        client.ping()
+        docker_status = "OK"
+    except Exception:
+        docker_status = "Unavailable"
+    table.add_row("Docker", docker_status)
+
+    try:
+        subprocess.run(["git", "--version"], capture_output=True, check=True)
+        git_status = "OK"
+    except Exception:
+        git_status = "Unavailable"
+    table.add_row("Git", git_status)
+    runtimes = ContainerRuntimeProbe().probe_all()
+    best_runtime = ContainerRuntimeProbe().best_available(runtimes)
+    table.add_row("Isolation runtime", f"{best_runtime.name}:{best_runtime.detail}" if best_runtime else "None available")
+
+    registry = SkillRegistry(root)
+    table.add_row("Skills", str(len(registry.list_skills())))
+    table.add_row("Approvals", settings.approval_mode)
+    table.add_row("Theme", settings.viki_theme)
+    table.add_row("Default session", settings.default_run_mode)
+    table.add_row("API", f"{settings.api_host}:{settings.api_port}")
+    table.add_row("Launcher", profile.launcher_hint)
+    ui.render_table(table)
+    _render_provider_overview(provider)
+
+
+@app.command("providers")
+def providers_status():
+    provider = LiteLLMProvider()
+    _render_cli_header("Providers", root=Path("."), provider=provider, autonomy_mode="provider-routing", validation_state="diagnostic")
+    ui.info(f"User config path: {user_config_path()}")
+    _render_provider_overview(provider)
+
+
+@app.command("platforms")
+def platform_info():
+    profile = PlatformSupport.current()
+    ui.banner(__version__)
+    table = Table(title="VIKI Platform Support")
+    table.add_column("Field")
+    table.add_column("Value")
+    table.add_row("OS", profile.os_name)
+    table.add_row("Family", profile.family)
+    table.add_row("Shell", profile.shell)
+    table.add_row("Python", profile.python_executable)
+    table.add_row("Venv Python", profile.venv_python)
+    table.add_row("Launcher", profile.launcher_name)
+    table.add_row("Shortcut", profile.launcher_hint)
+    ui.render_table(table)
+
+
+@app.command()
+def version():
+    console.print(__version__)
+
+
+@app.command()
+def run(
+    prompt: str = typer.Argument(..., help="Task for VIKI"),
+    mode: str = typer.Option(settings.default_run_mode, "--mode", "-m"),
+    path: Path = typer.Option(Path('.'), "--path", help="Workspace root"),
+    detach: bool = typer.Option(False, "--detach", "-d"),
+    background_child: bool = typer.Option(False, "--background-child", hidden=True),
+):
+    root = _workspace_root(path)
+    _run_live_session(prompt, root=root, mode=mode, detach=detach, background_child=background_child)
 
 
 @app.command()
