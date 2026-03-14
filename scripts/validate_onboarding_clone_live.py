@@ -89,7 +89,14 @@ def powershell_command(command: str) -> list[str]:
     return [shell, "-NoProfile", "-Command", command]
 
 
-def run_powershell(command: str, cwd: Path, env: dict[str, str], security: SecurityScanner, timeout: int = 1800) -> dict[str, object]:
+def run_powershell(
+    command: str,
+    cwd: Path,
+    env: dict[str, str],
+    security: SecurityScanner,
+    timeout: int = 1800,
+    input_text: str | None = None,
+) -> dict[str, object]:
     completed = subprocess.run(
         powershell_command(command),
         cwd=str(cwd),
@@ -97,6 +104,7 @@ def run_powershell(command: str, cwd: Path, env: dict[str, str], security: Secur
         text=True,
         timeout=timeout,
         env=env,
+        input=input_text,
     )
     return {
         "command": command,
@@ -147,17 +155,15 @@ def main() -> None:
     commands.append(run_powershell("viki --plain version", clone_dir, env, security))
     commands.append(run_powershell("viki --plain providers", clone_dir, env, security))
 
-    setup_input = "1`n1`ny`n`n1`n1`n1`nn`nn`n"
-    setup_command = f"$inputData = @\"\n{setup_input}\n\"@; $inputData | viki setup ."
-    commands.append(run_powershell(setup_command, clone_dir, env, security, timeout=1800))
+    setup_input = "1\n1\ny\n\n1\n1\n1\nn\nn\n"
+    commands.append(run_powershell("viki setup .", clone_dir, env, security, timeout=1800, input_text=setup_input))
     commands.append(run_powershell("viki --plain doctor .", clone_dir, env, security))
 
     bugfix_repo = output / "generic_bugfix_repo"
     shutil.copytree(clone_dir / "benchmarks" / "public" / "generic_bugfix" / "fixture", bugfix_repo)
 
-    prompt_input = "Fix the broken calculation and make tests pass.`n"
-    live_command = f"$inputData = @\"\n{prompt_input}\n\"@; $inputData | viki --force-rich --theme premium"
-    live_result = run_powershell(live_command, bugfix_repo, env, security, timeout=3600)
+    prompt_input = "Fix the broken calculation and make tests pass.\n"
+    live_result = run_powershell("viki --force-rich --theme premium", bugfix_repo, env, security, timeout=3600, input_text=prompt_input)
     commands.append(live_result)
 
     session_id = parse_session_id(str(live_result["stdout"]))
