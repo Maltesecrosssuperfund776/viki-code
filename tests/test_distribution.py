@@ -236,3 +236,47 @@ def test_github_clone_validator_remove_tree_handles_readonly_file(tmp_path: Path
     module.remove_tree(target)
 
     assert not target.exists()
+
+
+def test_connected_product_validator_prefers_dashscope_when_available():
+    spec = importlib.util.spec_from_file_location(
+        "viki_validate_connected_product_clone_live",
+        Path(__file__).resolve().parents[1] / "scripts" / "validate_connected_product_clone_live.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+
+    detected = module.detect_live_provider(
+        {
+            "DASHSCOPE_API_KEY": "redacted",
+            "DASHSCOPE_API_BASE": "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+            "OPENAI_API_KEY": "should-not-win",
+        }
+    )
+
+    assert detected["provider"] == "dashscope"
+    assert "DASHSCOPE_API_KEY" in detected["forwarded_keys"]
+
+
+def test_connected_product_validator_scrubs_unforwarded_provider_secrets():
+    spec = importlib.util.spec_from_file_location(
+        "viki_validate_connected_product_clone_live",
+        Path(__file__).resolve().parents[1] / "scripts" / "validate_connected_product_clone_live.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+
+    isolated = module.isolate_provider_env(
+        {
+            "DASHSCOPE_API_KEY": "redacted",
+            "OPENAI_API_KEY": "remove-me",
+            "PATH": "keep-me",
+        },
+        {"provider": "dashscope", "forwarded_keys": ["DASHSCOPE_API_KEY"]},
+    )
+
+    assert isolated["DASHSCOPE_API_KEY"] == "redacted"
+    assert "OPENAI_API_KEY" not in isolated
+    assert isolated["VIKI_PROVIDER"] == "dashscope"

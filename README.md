@@ -1,653 +1,448 @@
-<div align="center">
+# VIKI Code
 
-<img src="https://github.com/rebootix-research/viki-code/raw/main/assets/logo/viki-code-banner.png" alt="Viki Code" width="600"/>
+<p align="center">
+  <img src="assets/logo/viki-code-banner.png" alt="VIKI Code banner" width="100%" />
+</p>
 
-<br/><br/>
+<p align="center">
+  <a href="https://github.com/rebootix-research/viki-code/releases/latest">
+    <img alt="Release" src="https://img.shields.io/github/v/release/rebootix-research/viki-code?display_name=tag&style=for-the-badge&color=0f172a" />
+  </a>
+  <a href="https://github.com/rebootix-research/viki-code/stargazers">
+    <img alt="GitHub stars" src="https://img.shields.io/github/stars/rebootix-research/viki-code?style=for-the-badge&color=f59e0b" />
+  </a>
+  <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-2563eb?style=for-the-badge" />
+  <img alt="License" src="https://img.shields.io/badge/license-MIT-059669?style=for-the-badge" />
+  <img alt="Live suite" src="https://img.shields.io/badge/live%20suite-9%2F9-success?style=for-the-badge" />
+  <img alt="Public benchmark" src="https://img.shields.io/badge/public%20live%20benchmark-8%2F8-success?style=for-the-badge" />
+</p>
 
-```
-The world's first governed coding agent.
-No code ships without your approval. Ever.
-```
+VIKI Code is governed coding infrastructure for teams that want an AI system to operate inside real repositories, under approvals, with rollback paths, live validation, and evidence-backed execution.
 
-<br/>
+It is built for serious engineering workflows: bug-fixes, refactors, migrations, repo intelligence, local API control, IDE handoff, and chat-driven approvals across the same governed execution core.
 
-[![Release](https://img.shields.io/github/v/release/rebootix-research/viki-code?display_name=tag&style=for-the-badge&color=B08020&labelColor=0E0C0A&label=LATEST)](https://github.com/rebootix-research/viki-code/releases/latest)
-[![Python](https://img.shields.io/badge/Python-3.10%2B-B08020?style=for-the-badge&labelColor=0E0C0A)](https://python.org)
-[![License](https://img.shields.io/badge/License-MIT-B08020?style=for-the-badge&labelColor=0E0C0A)](LICENSE)
-[![Live Suite](https://img.shields.io/badge/Live%20Suite-9%2F9%20Passing-B08020?style=for-the-badge&labelColor=0E0C0A)](PROOF_REPORT.md)
-[![Benchmark](https://img.shields.io/badge/Benchmark-8%2F8%20Passing-B08020?style=for-the-badge&labelColor=0E0C0A)](BENCHMARK_RESULTS)
-[![Stars](https://img.shields.io/github/stars/rebootix-research/viki-code?style=for-the-badge&color=B08020&labelColor=0E0C0A)](https://github.com/rebootix-research/viki-code/stargazers)
+<p align="center">
+  <a href="https://rebootix-research.com/viki-code"><strong>Product Page</strong></a>
+  |
+  <a href="https://github.com/rebootix-research/viki-code"><strong>GitHub</strong></a>
+  |
+  <a href="./PROOF_REPORT.md"><strong>Proof Report</strong></a>
+  |
+  <a href="./RELEASE_NOTES.md"><strong>Release Notes</strong></a>
+</p>
 
-<br/>
+<p align="center">
+  If VIKI Code is relevant to your stack, star the repo to follow releases, proof updates, and benchmark progress.
+</p>
 
-[**Install**](#install)  · 
-[**Why Viki Code**](#why-viki-code)  · 
-[**How It Works**](#how-it-works)  · 
-[**Surfaces**](#surfaces)  · 
-[**Proof**](#proof)  · 
-[**Docs**](#documentation)
+## Why VIKI Code
 
-</div>
+- Real repo execution instead of chat-only suggestions.
+- Approval-aware autonomy with diff preview, patch export, and rollback paths.
+- Multi-agent execution designed for planning, implementation, validation, and review.
+- Repo intelligence tuned for large codebases, monorepos, and targeted test selection.
+- CLI, API, VS Code, Telegram, and WhatsApp surfaces over one execution model.
 
------
+## What You Can Do In Five Minutes
 
-<br/>
+- Install locally and launch directly into the guided VIKI setup flow.
+- Pick a provider preset, reuse a shell API key if one is already present, and save a user-level config outside the repo.
+- Let VIKI initialize the current repository safely, then ask for a real bug-fix, refactor, or repo summary in the same terminal session.
+- Carry the same session model across CLI, API, IDE, and approval workflows.
 
-<div align="center">
+## Proof At A Glance
 
-## Every other coding agent asks you to trust it.
+| Signal | Current 4.1.4 evidence |
+| --- | --- |
+| Local regression suite | `88 passed` |
+| Live validation suite | `9/9 passed` on fresh repos |
+| Generic CLI live wins | `7/7 passed` |
+| Public live benchmark slice | `8/8 passed` |
+| Public offline benchmark slice | `8/8 passed` |
+| Human-style install validation | passed |
+| Isolation validation | passed through real WSL-isolated execution |
 
-## Viki Code asks you to approve it.
+The project is public-release ready for its niche. It is not positioned here as fastest-in-class or benchmark leader overall, because the current proof still shows that live time-to-green is slower than the bundled baselines.
 
-</div>
+## What Makes It Different
 
-<br/>
+### Governed execution first
 
-Cursor. GitHub Copilot. Devin. Claude Code. They all operate on the same implicit promise: *trust us.* They generate code, they make changes, they touch your repositories — and they ask you to review after the fact, if at all.
+VIKI is built around controlled autonomy. Tasks run with worktree isolation, explicit validation, approval-aware flow control, reversible diffs, and artifacted evidence rather than optimistic "trust me" completion.
 
-**Viki Code operates on an explicit guarantee: nothing happens without you.**
+### Repo intelligence, not just prompt stuffing
 
-It is the only autonomous coding system in existence where the governance layer — mandatory human approvals, worktree isolation, instant rollback, live policy validation, and a complete audit trail — is not a setting you toggle on. It is a foundation you cannot turn off.
+The system indexes repository structure, symbols, imports, impacted areas, and likely test targets so it can localize work and keep context tight on real codebases.
 
-```
-╔═════════════════════════════════════════════════════════════════════════════╗
-║                                                                             ║
-║   The most powerful coding agent is not the fastest one.                    ║
-║   It is the one your team can actually trust with your codebase.            ║
-║                                                                             ║
-╚═════════════════════════════════════════════════════════════════════════════╝
-```
+### One runtime, multiple surfaces
 
-<br/>
+The same execution stack powers:
 
------
+- the CLI for direct operator use
+- a local HTTP API for orchestration and integrations
+- VS Code tooling for repo-aware interaction
+- Telegram and WhatsApp command flows for approvals, status, diff, and patch visibility
+
+## Who It Is For
+
+- platform and infra teams that want governed AI execution inside repositories
+- engineering teams working in larger repos or monorepos
+- teams that need approvals, rollback, and proof artifacts alongside automation
+- builders who want a serious local coding agent surface, not only a hosted chat UX
+
+## Product Page
+
+- [https://rebootix-research.com/viki-code](https://rebootix-research.com/viki-code)
+
+The Rebootix website source now includes a dedicated `/viki-code` product route, while this repository remains the full engineering source, proof base, and release home.
 
 ## Install
 
+Clone the repository and bootstrap a local install inside the checkout:
+
 ```bash
-# One command. Ready in under a minute.
+git clone https://github.com/rebootix-research/viki-code.git
+cd viki-code
+python scripts/install.py --path .
+```
+
+After install, launch the product entrypoint:
+
+```bash
+viki
+```
+
+VIKI now opens with a guided first-run experience. If setup is incomplete, it launches the setup wizard automatically. If setup is already complete, it drops you into a prompt-first console.
+
+Start VIKI immediately after install:
+
+```bash
+python scripts/install.py --path . --run
+```
+
+Upgrade an existing local install:
+
+```bash
+python scripts/install.py --path . --update
+```
+
+Remove the local install and launchers:
+
+```bash
+python scripts/install.py --path . --uninstall
+```
+
+If you prefer a built artifact flow, install from the release wheel:
+
+```bash
+pip install dist/viki_code-4.1.4-py3-none-any.whl
+```
+
+If you prefer a container package, pull the published GitHub Container Registry image:
+
+```bash
+docker pull ghcr.io/rebootix-research/viki-code:latest
+docker run --rm ghcr.io/rebootix-research/viki-code:latest --help
+```
+
+## First Launch
+
+The intended first successful path is:
+
+```bash
 git clone https://github.com/rebootix-research/viki-code.git
 cd viki-code
 python scripts/install.py --path .
 viki
 ```
 
-That’s it. VIKI opens with a guided setup wizard, detects your provider, and drops you into a prompt-first session. No config files to hunt. No environment variables to memorize. Just type what you want done.
+On first launch VIKI:
+
+- shows a premium welcome screen
+- shows the active workspace, provider state, GitHub state, recent workspaces, and recent sessions when available
+- detects whether provider setup is complete
+- launches the setup wizard automatically if it is not
+- saves configuration at the user level instead of writing secrets into the repo
+- initializes the current workspace safely when needed
+- drops you into a prompt-first task entry flow with connected product actions
+
+If you want to revisit setup explicitly, run:
 
 ```bash
-# Or install from the release wheel
-pip install dist/viki_code-4.1.4-py3-none-any.whl
-
-# Or run in Docker
-docker pull ghcr.io/rebootix-research/viki-code:latest
-docker run --rm -it ghcr.io/rebootix-research/viki-code:latest
+viki setup
+viki setup --repair
 ```
 
-<br/>
+## Setup Wizard And Provider Setup
 
------
+The guided setup flow is the primary path for normal users. It hides provider prefix syntax and offers provider presets instead:
 
-## Why Viki Code
+- DashScope / Qwen
+- OpenAI
+- OpenRouter
+- Anthropic
+- Azure OpenAI
+- NVIDIA with a first-class Kimi 2.5 preset over the OpenAI-compatible transport
+- Generic OpenAI-compatible endpoints
+- Ollama
 
-### The problem with every other coding agent
+The wizard asks for the minimum needed values, lets you reuse an API key that is already present in your shell, offers a sensible model profile, and saves the resulting config to a user-level file outside the repository.
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  What happens when you use a normal coding agent:                        │
-│                                                                         │
-│  You  →  "Fix the auth bug"                                             │
-│  AI   →  [Makes 47 changes across 12 files]                             │
-│  AI   →  "Done! Here's a summary."                                      │
-│  You  →  [Tries to understand what just happened to your codebase]      │
-│  You  →  [Finds three new bugs introduced during the "fix"]             │
-│  You  →  "How do I undo this?"                                          │
-│  AI   →  "..."                                                          │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+For NVIDIA users, the wizard keeps the transport details out of the normal path: choose the `NVIDIA` preset, pick `Kimi 2.5`, paste the key, accept the default base URL, and start prompting.
 
-### What happens with Viki Code
+Optional setup in the same flow:
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  What happens when you use Viki Code:                                   │
-│                                                                         │
-│  You   →  "Fix the auth bug"                                            │
-│  VIKI  →  [Plans the fix, scopes to affected files only]               │
-│  VIKI  →  [Shows you a clean diff before touching anything]            │
-│  VIKI  →  "Here's what I want to do. Approve?"          ← YOU DECIDE  │
-│  You   →  "Yes" / "No" / "Change this part first"                      │
-│  VIKI  →  [Executes exactly what was approved]                         │
-│  VIKI  →  [Runs tests, validates, confirms green]                      │
-│  VIKI  →  [Logs every action with a cryptographic record]              │
-│  You   →  [Can undo any of it in one command, any time]                │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+- Telegram bot token and allowed chat IDs
+- WhatsApp via Twilio
+- default approval mode
+- default session style
+- default terminal theme
 
-<br/>
-
-The difference is not capability. The difference is **control**.
-
-<br/>
-
------
-
-## How It Works
-
-### The Governance Flow
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                                                                                 │
-│   1. You state intent                                                           │
-│   ─────────────────────────────────────────────────────────────────────────    │
-│   viki> Fix the broken calculation in billing.py and make the tests pass       │
-│                                                                                 │
-│                  │                                                              │
-│                  ▼                                                              │
-│   2. VIKI plans and scopes                                                      │
-│   ─────────────────────────────────────────────────────────────────────────    │
-│   ┌─────────────────────────────────────────────────────────────────────┐      │
-│   │  Planning...                                                         │      │
-│   │  ├─ Analyzing repository structure                                  │      │
-│   │  ├─ Locating affected symbols: calculate_total(), apply_discount()  │      │
-│   │  ├─ Identifying impacted tests: test_billing.py, test_invoices.py  │      │
-│   │  └─ Scoping change to 2 files, 3 functions                         │      │
-│   └─────────────────────────────────────────────────────────────────────┘      │
-│                                                                                 │
-│                  │                                                              │
-│                  ▼                                                              │
-│   3. VIKI shows you the diff before touching anything                           │
-│   ─────────────────────────────────────────────────────────────────────────    │
-│   ┌─────────────────────────────────────────────────────────────────────┐      │
-│   │  billing.py                                                          │      │
-│   │  ─────────────────────────────────────────────────────────────────  │      │
-│   │  - total = price * quantity                                          │      │
-│   │  + total = round(price * quantity, 2)                               │      │
-│   │  - discount = total / discount_rate                                  │      │
-│   │  + discount = total * (discount_rate / 100)                         │      │
-│   └─────────────────────────────────────────────────────────────────────┘      │
-│                                                                                 │
-│                  │                                                              │
-│                  ▼                                                              │
-│   4. You approve (or reject, or modify)           ◀── THIS IS MANDATORY       │
-│   ─────────────────────────────────────────────────────────────────────────    │
-│   ┌─────────────────────────────────────────────────────────────────────┐      │
-│   │  2 changes staged for billing.py                                    │      │
-│   │  Approve this change? [y/n/edit/explain]  _                         │      │
-│   └─────────────────────────────────────────────────────────────────────┘      │
-│                                                                                 │
-│                  │                                                              │
-│                  ▼                                                              │
-│   5. VIKI executes, validates, confirms                                         │
-│   ─────────────────────────────────────────────────────────────────────────    │
-│   ┌─────────────────────────────────────────────────────────────────────┐      │
-│   │  Executing approved changes...                                       │      │
-│   │  ✓  billing.py patched                                              │      │
-│   │  ✓  Running test_billing.py          →  12/12 passed               │      │
-│   │  ✓  Running test_invoices.py         →   8/8 passed                │      │
-│   │  ✓  Audit record written                                            │      │
-│   │  ✓  Rollback path preserved                                         │      │
-│   │                                                                      │      │
-│   │  Task complete. Undo available with: viki rollback <session_id>     │      │
-│   └─────────────────────────────────────────────────────────────────────┘      │
-│                                                                                 │
-└─────────────────────────────────────────────────────────────────────────────────┘
-```
-
-<br/>
-
-### Under the Hood: The Multi-Agent Runtime
-
-VIKI Code runs three specialized agents for every task. Not one model doing everything — three dedicated cognitive roles, each accountable for a distinct part of the pipeline:
-
-```
-┌───────────────────────────────────────────────────────────────────────────────┐
-│                                                                               │
-│   ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────────────┐  │
-│   │                 │    │                 │    │                         │  │
-│   │    PLANNER      │───▶│  IMPLEMENTER    │───▶│       VALIDATOR         │  │
-│   │                 │    │                 │    │                         │  │
-│   │  Understands    │    │  Writes the     │    │  Runs tests. Checks     │  │
-│   │  your repo.     │    │  actual code    │    │  policy. Confirms       │  │
-│   │  Scopes the     │    │  changes.       │    │  nothing is broken.     │  │
-│   │  work. Plans    │    │  Respects the   │    │  Refuses to sign off    │  │
-│   │  the safe path. │    │  plan. Stays    │    │  if validation fails.   │  │
-│   │                 │    │  in scope.      │    │                         │  │
-│   └─────────────────┘    └─────────────────┘    └─────────────────────────┘  │
-│                                                                               │
-│   Repo intelligence at every stage:                                           │
-│   Symbol lookup · Import graph · Impact analysis · Test targeting            │
-│                                                                               │
-└───────────────────────────────────────────────────────────────────────────────┘
-```
-
-<br/>
-
-### Repo Intelligence
-
-VIKI Code does not stuff your entire codebase into a context window and hope. It builds a live model of your repository:
+Advanced env-based setup is still available for operators who prefer it:
 
 ```bash
-# See what VIKI knows about your repo
-viki repo "auth migration" --path .
-
-# Find symbols across the codebase
-viki symbols "normalize_account" --path .
-
-# Understand what changes to a file would affect
-viki impact --changed-file viki/api/server.py --path .
+export VIKI_PROVIDER=dashscope
+export DASHSCOPE_API_KEY=...
+export DASHSCOPE_API_BASE=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+export VIKI_CODING_MODEL=openai/qwen3-coder-next
+viki providers
+viki doctor .
 ```
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  viki impact --changed-file src/auth/session.py                         │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                         │
-│  Direct dependents (3):                                                 │
-│    src/api/routes/login.py          ← imports session.validate()       │
-│    src/middleware/auth.py           ← imports session.refresh()        │
-│    tests/test_session.py            ← 14 test cases affected           │
-│                                                                         │
-│  Indirect dependents (7):                                               │
-│    src/api/routes/dashboard.py                                         │
-│    src/api/routes/settings.py                                          │
-│    ...                                                                  │
-│                                                                         │
-│  Recommended test scope:                                                │
-│    pytest tests/test_session.py tests/test_auth.py                     │
-│                                                                         │
-└─────────────────────────────────────────────────────────────────────────┘
+PowerShell example:
+
+```powershell
+$env:VIKI_PROVIDER = "dashscope"
+$env:DASHSCOPE_API_KEY = "<temporary key>"
+$env:DASHSCOPE_API_BASE = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+$env:VIKI_CODING_MODEL = "openai/qwen3-coder-next"
+viki providers
+viki doctor .
 ```
 
-<br/>
+## Quick Start
 
------
+Installed launcher locations:
 
-## What You Can Do
+```text
+Linux / macOS: .viki-workspace/bin/viki-local
+Windows CMD:   .viki-workspace\bin\viki-local.cmd
+PowerShell:    .viki-workspace\bin\viki-local.ps1
+```
 
-### Real tasks, not toy examples
+Typical prompt-first flow after installation:
 
 ```bash
-# Bug fixes
-viki run "Fix the broken calculation in billing.py and make tests pass" --path .
-
-# Refactors
-viki run "Refactor auth naming consistently across the codebase and keep all tests green" --path .
-
-# Migrations
-viki run "Migrate the old consumer to the new API and run the relevant tests" --path .
-
-# Repo intelligence
-viki run "Inspect this repo and give me a full summary of the architecture" --path .
-
-# Multi-step work
-viki run "Add input validation to all public API endpoints and write tests for each" --path .
+viki
+# choose provider preset in the wizard if needed
+# then use the home screen to open a repo, connect GitHub, resume a session, or type a task at `viki>`
 ```
 
-### Session management
+Connected product commands are also available directly:
 
 ```bash
-# See what's running or completed
-viki status . --session-id <session_id>
+viki github status
+viki github repos --limit 10
+viki github clone rebootix-research/viki-code
+viki workspaces list
+viki workspaces use /path/to/repo
+viki sessions list .
+viki sessions continue <session_id> --path .
+```
 
-# Review the diff from any session
+Explicit task commands still work:
+
+```bash
+viki run "Fix the broken calculation and run the relevant tests" --path .
+viki status .
 viki diff <session_id> --path . --rendered
-
-# Undo everything from a session
-viki rollback <session_id> --path .
-
-# Export a patch bundle
-viki patch <session_id> --path .
 ```
 
-<br/>
+PowerShell-friendly first run:
 
------
-
-## Surfaces
-
-### One runtime. Every interface you work in.
-
-```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                                                                              │
-│   ┌───────────┐   ┌───────────┐   ┌───────────┐   ┌───────────┐            │
-│   │           │   │           │   │           │   │           │            │
-│   │   CLI     │   │   API     │   │  VS Code  │   │ Messaging │            │
-│   │           │   │           │   │           │   │           │            │
-│   └───────────┘   └───────────┘   └───────────┘   └───────────┘            │
-│        │               │               │                │                   │
-│   Direct terminal  Local HTTP     Repo-aware       Telegram &              │
-│   operator use.   REST API for    extension.       WhatsApp.               │
-│   Full session    orchestration   Task submission  Approve,                 │
-│   control.        and CI/CD.      and approval     reject, diff            │
-│                   integration.    from your IDE.   from your phone.        │
-│                                                                              │
-│                    └─────────────────────────────┘                          │
-│                         Same execution core.                                 │
-│                         Same governance model.                               │
-│                         All surfaces.                                        │
-│                                                                              │
-└──────────────────────────────────────────────────────────────────────────────┘
+```powershell
+git clone https://github.com/rebootix-research/viki-code.git
+cd viki-code
+python scripts/install.py --path .
+viki
 ```
 
-### CLI
+## Terminal Experience
+
+VIKI ships with a premium terminal presentation layer for interactive use. In a capable terminal it renders a branded banner, session header, repo and branch context, provider and model strip, setup summaries, agent activity tables, approval panels, and readable diff previews.
+
+- Default interactive theme: `premium`
+- Alternate high-contrast theme: `contrast`
+- Plain fallback: automatic in CI, non-interactive shells, and minimal terminals
+- Explicit plain mode: `viki --plain ...`
+- Forced themed capture for transcripts or screenshots: `viki --force-rich ...`
+- Guided first run: `viki`
+- Connected home screen with primary actions for GitHub, workspaces, setup, approvals, diffs, and session resume
+- Explicit onboarding: `viki setup`
+
+Examples:
 
 ```bash
-viki                          # Interactive prompt-first session
-viki run "task" --path .      # Direct task execution
-viki setup                    # Provider setup wizard
-viki setup --repair           # Repair broken setup
-viki providers                # List configured providers
-viki doctor .                 # Health check your workspace
+viki
+viki setup
+viki github status
+viki workspaces list
+viki sessions list .
+viki --theme premium doctor .
+viki --theme premium providers
+viki --theme premium run "Fix the broken calculation and make tests pass" --path .
+viki --plain run "Inspect this repo and summarize the next safe step" --path .
+viki --force-rich --theme premium doctor .
+viki --theme premium diff <session_id> --path . --rendered
 ```
 
-### API
+The themed layer is designed for PowerShell, macOS Terminal, Linux shells, and modern Windows terminals without requiring shell-specific setup.
+
+## CLI
+
+Connected product commands:
 
 ```bash
-# Start the local API server
+viki
+viki home
+viki github status
+viki github repos --limit 10
+viki github clone rebootix-research/viki-code --destination ~/viki-workspaces
+viki workspaces list
+viki workspaces use ~/viki-workspaces/viki-code
+viki sessions list .
+viki sessions continue <session_id> --path .
+```
+
+Repo intelligence and session tooling:
+
+```bash
+viki repo "auth migration" --path .
+viki symbols "normalize_account" --path .
+viki impact --changed-file viki/api/server.py --path .
+viki diff <session_id> --path .
+viki status . --session-id <session_id>
+```
+
+Live task examples:
+
+```bash
+viki run "Fix the broken calculation and make tests pass" --path .
+viki run "Refactor auth naming consistently and keep behavior green" --path .
+viki run "Migrate the old consumer to the new API and run the relevant tests" --path .
+```
+
+## API
+
+Start the local API:
+
+```bash
 viki up . --host 0.0.0.0 --port 8787
 ```
 
-```
-GET   /healthz                    Health check
-GET   /protocol                   API version and capabilities
-POST  /runs                       Submit a new task
-GET   /runs/{id}                  Task status
-GET   /runs/{id}/diff             Diff for a task
-GET   /runs/{id}/result           Final result
-GET   /approvals                  Pending approvals
-POST  /approvals/{id}             Approve or reject
-GET   /repo/symbols?q=...         Symbol lookup
-GET   /repo/impact?path=...       Impact analysis
-```
+Representative routes:
 
-### VS Code
+- `GET /healthz`
+- `GET /protocol`
+- `GET /runs`
+- `POST /runs`
+- `GET /runs/{id}`
+- `GET /runs/{id}/events`
+- `GET /runs/{id}/diff`
+- `GET /runs/{id}/result`
+- `GET /repo/profile`
+- `GET /repo/context?q=...`
+- `GET /repo/search?q=...`
+- `GET /repo/symbols?q=...`
+- `GET /repo/impact?path=...`
+- `GET /approvals`
+- `POST /approvals/{id}`
 
-```bash
-viki ide vscode .               # Generate workspace integration
-viki ide vscode-extension .     # Full extension setup
-```
-
-### Messaging (Telegram & WhatsApp)
-
-```
-/status <session_id>     See what's running
-/approvals               List pending approvals
-/approve <id>            Approve a staged change
-/reject <id>             Reject a staged change
-/diff <session_id>       See the diff on your phone
-/patch <session_id>      Download the patch bundle
-/rollback <session_id>   Undo everything
-```
-
-<br/>
-
------
-
-## Provider Support
-
-VIKI Code works with every major provider. Switch in one command. No code changes.
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│  Supported Providers                                                   │
-├────────────────────────────────────────────────────────────────────────┤
-│                                                                        │
-│  ✓  Anthropic          (Claude Sonnet, Claude Opus)                   │
-│  ✓  OpenAI             (GPT-4o, o1, o3)                               │
-│  ✓  NVIDIA NIM         (Kimi K2.5, GLM-5, Llama 3.3)                 │
-│  ✓  DashScope / Qwen   (Qwen3-Coder, Qwen3)                          │
-│  ✓  OpenRouter         (Any model via unified API)                    │
-│  ✓  Azure OpenAI       (Enterprise deployments)                       │
-│  ✓  Ollama             (Local models, fully offline)                  │
-│  ✓  Generic OpenAI-compatible endpoints                               │
-│                                                                        │
-│  First-class NVIDIA preset: choose NVIDIA → pick Kimi K2.5 →         │
-│  paste key → start prompting. That's it.                              │
-│                                                                        │
-└────────────────────────────────────────────────────────────────────────┘
-```
-
-<br/>
-
------
-
-## Safety, Approvals, and Rollback
-
-Viki Code is designed to be useful under autonomy without pretending autonomy should be ungoverned.
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│  GOVERNANCE BY DEFAULT. NOT BY CONFIGURATION.                                   │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                 │
-│  ┌──────────────────────┐   Every task runs in an isolated worktree.           │
-│  │  Worktree Isolation  │   The repository is never touched until you         │
-│  └──────────────────────┘   approve. Never.                                    │
-│                                                                                 │
-│  ┌──────────────────────┐   Approval-aware action flow for every              │
-│  │  Approval Gate       │   consequential operation. The gate is              │
-│  └──────────────────────┘   architectural. Not a setting. Not a flag.         │
-│                                                                                 │
-│  ┌──────────────────────┐   Diff preview and patch bundle before              │
-│  │  Diff Preview        │   anything is applied. See exactly what             │
-│  └──────────────────────┘   will change before it changes.                    │
-│                                                                                 │
-│  ┌──────────────────────┐   One command. Any session. Complete                │
-│  │  Instant Rollback    │   reversion. No data loss. No partial              │
-│  └──────────────────────┘   states. Clean every time.                         │
-│                                                                                 │
-│  ┌──────────────────────┐   Every action logged with attribution.             │
-│  │  Audit Trail         │   Cryptographic record of everything                │
-│  └──────────────────────┘   VIKI touched. Verifiable on demand.              │
-│                                                                                 │
-│  ┌──────────────────────┐   Sensitive paths, keys, and outputs                │
-│  │  Redacted Logs       │   automatically scrubbed from all                   │
-│  └──────────────────────┘   proof artifacts and session logs.                 │
-│                                                                                 │
-└─────────────────────────────────────────────────────────────────────────────────┘
-```
-
-<br/>
-
------
-
-## Proof
-
-We publish everything. Every benchmark. Every live run result. Every test. No black box claims.
-
-```
-┌────────────────────────────────────────────────────┬──────────┬────────────┐
-│  Validation Signal                                 │  Result  │  Version   │
-├────────────────────────────────────────────────────┼──────────┼────────────┤
-│  Local regression suite                            │  76/76   │  4.1.4     │
-│  Live validation suite (fresh repos)               │   9/9    │  4.1.4     │
-│  Generic CLI live wins                             │   7/7    │  4.1.4     │
-│  Public live benchmark slice                       │   8/8    │  4.1.4     │
-│  Public offline benchmark slice                    │   8/8    │  4.1.4     │
-│  Human-style install validation                    │  Passed  │  4.1.4     │
-│  WSL-isolated live execution                       │  Passed  │  4.1.4     │
-└────────────────────────────────────────────────────┴──────────┴────────────┘
-```
-
-**Honest limitation:** Viki Code currently trails some baselines on time-to-green even when it completes the task successfully. We document this openly. Speed is a known work item and is being addressed in the active development cycle.
-
-→ **[Full Proof Report](PROOF_REPORT.md)**  ·  **[Benchmark Results](BENCHMARK_RESULTS/)**  ·  **[Live Run Results](LIVE_RUN_RESULTS/)**
-
-<br/>
-
------
-
-## Who It Is For
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                                                                                 │
-│   Platform & Infrastructure Teams                                               │
-│   ──────────────────────────────────────────────────────────────────────────    │
-│   You need AI execution that doesn't become a liability. VIKI Code gives       │
-│   you automation with approval gates, audit trails, and rollback built in.     │
-│                                                                                 │
-│   Engineering Teams in Large Repos or Monorepos                                 │
-│   ──────────────────────────────────────────────────────────────────────────    │
-│   VIKI Code's repo intelligence indexes your structure, understands             │
-│   your symbol graph, and scopes work correctly — instead of hallucinating      │
-│   changes across files it never read.                                           │
-│                                                                                 │
-│   Teams That Need Approvals, Rollback, and Proof                                │
-│   ──────────────────────────────────────────────────────────────────────────    │
-│   Compliance requirements. Security reviews. Regulated industries.             │
-│   Viki Code was built for exactly this. Governance is not an add-on.           │
-│   It is the entire design philosophy.                                           │
-│                                                                                 │
-│   Builders Who Want a Serious Local Agent, Not a Hosted Chat UX                 │
-│   ──────────────────────────────────────────────────────────────────────────    │
-│   Your data stays on your machine. Your code stays in your perimeter.          │
-│   Your API key goes to a provider of your choice. Nothing else.                │
-│                                                                                 │
-└─────────────────────────────────────────────────────────────────────────────────┘
-```
-
-<br/>
-
------
-
-## vs. The Alternatives
-
-```
-                        Cursor     Copilot    Devin    Claude Code   VIKI CODE
-                        ──────     ───────    ─────    ───────────   ─────────
-  Mandatory approvals     ✗          ✗         ✗           ✗           ✓
-  Instant rollback        ✗          ✗         ✗           ✗           ✓
-  Cryptographic audit     ✗          ✗         ✗           ✗           ✓
-  Worktree isolation      ✗          ✗         ⚠           ✗           ✓
-  Diff preview gate       ⚠          ✗         ⚠           ✗           ✓
-  Local-first             ✗          ✗         ✗           ✗           ✓
-  Multi-agent runtime     ✗          ✗         ✓           ✓           ✓
-  Repo intelligence       ✓          ✓         ✓           ✓           ✓
-  Messaging surfaces      ✗          ✗         ✗           ✗           ✓
-  Provider agnostic       ✗          ✗         ✗           ✗           ✓
-  Open source             ✗          ✗         ✗           ✗           ✓
-```
-
-<br/>
-
------
-
-## The Terminal Experience
-
-VIKI ships with a premium terminal presentation layer. In a capable terminal it renders:
-
-```
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                                                                              ║
-║   VIKI Code  v4.1.4                        rebootix-research/viki-code      ║
-║   Provider: Anthropic  ·  Model: claude-sonnet-4-20250514                  ║
-║   Workspace: /home/user/projects/my-api    Branch: main                     ║
-║                                                                              ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║                                                                              ║
-║   Session: a3f7d291   ·   Started: 14:32:01   ·   Status: Active           ║
-║                                                                              ║
-║   ┌──────────────────────────────────────────────────────────────────────┐  ║
-║   │  ▶  Planner       Scoping fix to billing.py — 2 functions affected  │  ║
-║   │  ▶  Implementer   Writing patch...                                   │  ║
-║   │  ◷  Validator     Awaiting implementer                               │  ║
-║   └──────────────────────────────────────────────────────────────────────┘  ║
-║                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════╝
-
-  viki>  _
-```
+Example run request:
 
 ```bash
-viki --theme premium run "task" --path .   # Full premium render
-viki --theme contrast run "task" --path .  # High contrast
-viki --plain run "task" --path .           # Plain output for CI
-viki --force-rich --theme premium doctor . # Force themed output
+curl -X POST http://127.0.0.1:8787/runs ^
+  -H "Content-Type: application/json" ^
+  -d "{\"prompt\":\"Fix the broken calculation and make tests pass\",\"workspace_path\":\".\"}"
 ```
 
-<br/>
+## IDE / VS Code
 
------
+Generate workspace integration:
+
+```bash
+viki ide vscode .
+viki ide vscode-extension .
+```
+
+The VS Code surface is built to expose task submission, status visibility, diff review, approvals, and repo-aware lookup against the same underlying session model.
+
+## Messaging
+
+Telegram and WhatsApp webhook handlers support a command-driven operational surface, including:
+
+```text
+/help
+/latest
+/sessions
+/status <session_id>
+/approvals
+/approve <id>
+/reject <id>
+/diff <session_id>
+/patch <session_id>
+/symbols <query>
+/repo <query>
+/logs <session_id>
+```
+
+In the current public proof set, these messaging surfaces are harness-tested. They are not represented here as fully live-network validated end to end.
+
+## Safety, Approvals, And Rollback
+
+VIKI is designed to be useful under autonomy without pretending autonomy should be ungoverned.
+
+- isolated task worktrees
+- targeted validation before acceptance
+- approval-aware action flow for risky operations
+- diff preview and exported patch bundles
+- redacted logs and proof artifacts
+- rollback and revert paths preserved as first-class outputs
+
+## Benchmarks And Live Validation
+
+The current 4.1.4 evidence shows a credible, live-tested system:
+
+- `9/9` broader live validation tasks passed on fresh repos
+- `8/8` public live benchmark cases passed
+- `8/8` public offline scripted benchmark cases passed
+- real API bug-fix and API multi-agent refactor runs passed
+- human-style install validation passed
+- real WSL-isolated live execution passed
+
+The honest limitation is speed: VIKI currently trails the bundled baselines on time-to-green even where it completes the task successfully.
 
 ## Project Structure
 
-```
-viki/                  Core runtime, repo intelligence, orchestration,
-│                      API, IDE tooling, integrations
-│
-├── agents/            Planner, Implementer, Validator agents
-├── repo/              Repo intelligence — symbols, impact, indexing
-├── api/               Local HTTP REST API server
-├── ide/               VS Code extension generation
-├── integrations/      Telegram, WhatsApp webhook handlers
-├── governance/        Approval gate, audit trail, rollback engine
-└── ui/                Premium terminal presentation layer
-
-scripts/               Install, validation, live-run, release helpers
-tests/                 Unit, integration, CLI, API, regression
-BENCHMARK_RESULTS/     Machine-readable benchmark artifacts
-LIVE_RUN_RESULTS/      Live validation artifacts
-docs/                  Benchmark board and documentation
+```text
+viki/                 Core runtime, repo intelligence, orchestration, API, IDE, integrations
+scripts/              Install, validation, live-run, and release helpers
+tests/                Unit, integration, CLI, API, and regression coverage
+BENCHMARK_RESULTS/    Curated machine-readable benchmark artifacts
+LIVE_RUN_RESULTS/     Curated live validation artifacts
+docs/                 Published benchmark board and supporting docs
+assets/logo/          SVG brand assets for GitHub and release surfaces
 ```
 
-<br/>
+## Community
 
------
+- [Contributing](CONTRIBUTING.md)
+- [Security](SECURITY.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [License](LICENSE)
 
-## Documentation
+## Built By Rebootix Artificial Intelligence Research And Development
 
-|Document            |Description                           |
-|--------------------|--------------------------------------|
-|<PROOF_REPORT.md>   |Full validation and benchmark evidence|
-|<RELEASE_NOTES.md>  |What changed in each release          |
-|<AGENTS.md>         |How the multi-agent runtime works     |
-|<CONTRIBUTING.md>   |How to contribute to Viki Code        |
-|<SECURITY.md>       |Security policy and disclosure        |
-|<BENCHMARK_RESULTS/>|All benchmark artifacts               |
-|<LIVE_RUN_RESULTS/> |All live run artifacts                |
+Rebootix Artificial Intelligence Research and Development builds advanced AI systems, autonomous software infrastructure, and production-grade machine intelligence products.
 
-<br/>
-
------
-
-## Contributing
-
-Viki Code is open source and welcomes contributions. Read <CONTRIBUTING.md> before opening a pull request.
-
-If you find a security issue, read <SECURITY.md> and disclose responsibly.
-
-If Viki Code is relevant to your stack — star the repo. It helps more than you think.
-
-<br/>
-
------
-
-<div align="center">
-
-```
-╔═══════════════════════════════════════════════════════════════════════╗
-║                                                                       ║
-║   The most powerful coding agent in the world                         ║
-║   is not the fastest one.                                             ║
-║                                                                       ║
-║   It is the one you can actually trust                                ║
-║   with your most important repositories.                              ║
-║                                                                       ║
-╚═══════════════════════════════════════════════════════════════════════╝
-```
-
-<br/>
-
-[![Install](https://img.shields.io/badge/Get%20Started-Install%20Viki%20Code-B08020?style=for-the-badge&labelColor=0E0C0A)](https://github.com/rebootix-research/viki-code#install)
-[![Stars](https://img.shields.io/github/stars/rebootix-research/viki-code?style=for-the-badge&color=B08020&labelColor=0E0C0A&label=Star%20on%20GitHub)](https://github.com/rebootix-research/viki-code/stargazers)
-
-<br/>
-
-**Built by [Rebootix Artificial Intelligence Research and Development](https://rebootix-research.com)**
-
-*Sovereign AI Infrastructure · United Arab Emirates · 2026*
-
-</div>
+Rebootix focuses on real-world execution, applied AI engineering, and high-performance intelligent systems. VIKI Code is part of that broader effort: practical AI software that operates inside real developer workflows and governed execution environments.

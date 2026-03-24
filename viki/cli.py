@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import shutil
 import subprocess
 import sys
 import warnings
@@ -26,6 +27,8 @@ from .core.hive import HiveMind
 from .core.repo_index import RepoIndex
 from .evals.suite import BenchmarkSuite
 from .evals.scripted_provider import ScriptedEvalProvider
+from .github_connect import GitHubRepo, clone_github_repo, detect_github_status, list_github_repos, managed_workspace_root
+from .product_state import active_workspace_path, remember_workspace, recent_workspace_paths, set_active_workspace
 from .ide.vscode import VSCodeIntegrator
 from .infrastructure.database import DatabaseManager
 from .infrastructure.observability import setup_logging, start_metrics_server
@@ -46,11 +49,17 @@ approvals_app = typer.Typer(help="Review approval queue")
 ide_app = typer.Typer(help="IDE integration commands")
 evals_app = typer.Typer(help="Benchmark and eval suite")
 integrations_app = typer.Typer(help="Messaging integrations")
+github_app = typer.Typer(help="GitHub connection and repo commands")
+workspaces_app = typer.Typer(help="Workspace selection and switching")
+sessions_app = typer.Typer(help="Session history and resume")
 app.add_typer(skills_app, name="skills")
 app.add_typer(approvals_app, name="approvals")
 app.add_typer(ide_app, name="ide")
 app.add_typer(evals_app, name="evals")
 app.add_typer(integrations_app, name="integrations")
+app.add_typer(github_app, name="github")
+app.add_typer(workspaces_app, name="workspaces")
+app.add_typer(sessions_app, name="sessions")
 ui = create_terminal_ui()
 console = ui.console
 
@@ -77,12 +86,39 @@ def _main_callback(
 ):
     _configure_terminal_ui(plain, theme, force_rich=force_rich)
     if ctx.invoked_subcommand is None:
-        _launch_default_entry(_workspace_root(Path(".")))
+        _launch_default_entry(_default_entry_root(Path(".")))
         raise typer.Exit()
 
 
 def _workspace_root(path: Path) -> Path:
-    return path.resolve()
+    resolved = path.resolve()
+    if _looks_like_repo_or_workspace(resolved):
+        remember_workspace(resolved)
+    return resolved
+
+
+def _looks_like_repo_or_workspace(path: Path) -> bool:
+    return any(
+        [
+            (path / ".git").exists(),
+            (path / settings.workspace_dir).exists(),
+            (path / "pyproject.toml").exists(),
+            (path / "package.json").exists(),
+            (path / "go.mod").exists(),
+            (path / "Cargo.toml").exists(),
+        ]
+    )
+
+
+def _default_entry_root(path: Path) -> Path:
+    resolved = path.resolve()
+    if _looks_like_repo_or_workspace(resolved):
+        remember_workspace(resolved)
+        return resolved
+    active = active_workspace_path()
+    if active:
+        return active.resolve()
+    return resolved
 
 
 def _git_branch(root: Path) -> str:
@@ -192,6 +228,215 @@ def _render_provider_overview(provider: Optional[LiteLLMProvider] = None) -> Non
         ui.info(hint)
 
 
+def _home_github_summary() -> tuple[str, list[GitHubRepo]]:
+    status = detect_github_status()
+    repos = list_github_repos(limit=8) if status.authenticated else []
+    if not status.cli_available:
+        return status.error or "GitHub CLI unavailable", []
+    if not status.authenticated:
+        return status.error or "Not connected", []
+    repo_note = f"{len(repos)} repos visible" if repos else "connected"
+    return f"{status.account or 'github'} ({repo_note})", repos
+
+
+async def _recent_sessions_for_root(root: Path, limit: int = 5) -> list[dict[str, Any]]:
+    db = _db_for_root(root)
+    await db.initialize()
+    return await db.get_recent_sessions(limit)
+
+
+def _workspace_candidates(current_root: Path) -> list[Path]:
+    candidates: list[Path] = []
+    seen: set[str] = set()
+    for item in [current_root, *recent_workspace_paths()]:
+        candidate = item.resolve()
+        key = str(candidate)
+        if key in seen or not candidate.exists():
+            continue
+        seen.add(key)
+        candidates.append(candidate)
+    managed_root = managed_workspace_root()
+    for item in sorted(path for path in managed_root.iterdir() if path.is_dir()):
+        candidate = item.resolve()
+        key = str(candidate)
+        if key in seen:
+            continue
+        seen.add(key)
+        candidates.append(candidate)
+    return candidates
+
+
+def _render_recent_workspaces(current_root: Path) -> None:
+    candidates = _workspace_candidates(current_root)
+    if not candidates:
+        return
+    table = Table(title="Recent Workspaces")
+    table.add_column("#", width=4)
+    table.add_column("Workspace")
+    table.add_column("State")
+    for index, path in enumerate(candidates[:6], start=1):
+        label = "active" if path.resolve() == current_root.resolve() else "recent"
+        table.add_row(str(index), str(path), label)
+    ui.render_table(table)
+
+
+def _render_recent_sessions_block(root: Path) -> None:
+    try:
+        sessions = asyncio.run(_recent_sessions_for_root(root, limit=5))
+    except RuntimeError:
+        sessions = []
+    if not sessions:
+        return
+    table = Table(title="Recent Sessions")
+    table.add_column("#", width=4)
+    table.add_column("Session")
+    table.add_column("Status")
+    table.add_column("Request")
+    for index, item in enumerate(sessions, start=1):
+        table.add_row(
+            str(index),
+            item["id"],
+            item.get("status", "?"),
+            (item.get("user_request") or "")[:60],
+        )
+    ui.render_table(table)
+
+
+def _render_home_screen(root: Path, provider: LiteLLMProvider) -> None:
+    _render_cli_header("Home", root=root, provider=provider, autonomy_mode=settings.default_run_mode, validation_state="ready")
+    ui.section("Prompt-First Console")
+    github_summary, repos = _home_github_summary()
+    state_table = Table(title="Connected Product State")
+    state_table.add_column("Area")
+    state_table.add_column("Status")
+    state_table.add_row("Workspace", str(root))
+    state_table.add_row("Provider", _provider_summary(provider))
+    state_table.add_row("GitHub", github_summary)
+    state_table.add_row("Sessions", "available" if (root / settings.workspace_dir / "viki.db").exists() else "no history yet")
+    ui.render_table(state_table)
+    actions_table = Table(title="Primary Actions")
+    actions_table.add_column("Action")
+    actions_table.add_column("How")
+    actions_table.add_row("Start task", "Type a task directly at the viki> prompt")
+    actions_table.add_row("Open repo", "/workspace")
+    actions_table.add_row("Connect GitHub", "/github")
+    actions_table.add_row("Setup provider", "/setup")
+    actions_table.add_row("Resume session", "/resume")
+    actions_table.add_row("View approvals", "/approvals")
+    actions_table.add_row("View diffs", "/diffs")
+    ui.render_table(actions_table)
+    if repos:
+        repo_table = Table(title="GitHub Repos")
+        repo_table.add_column("#", width=4)
+        repo_table.add_column("Repository")
+        repo_table.add_column("Visibility")
+        for index, repo in enumerate(repos[:5], start=1):
+            repo_table.add_row(str(index), repo.name_with_owner, "private" if repo.is_private else "public")
+        ui.render_table(repo_table)
+    _render_recent_workspaces(root)
+    _render_recent_sessions_block(root)
+    ui.render_hint_strip(
+        [
+            "Type a task directly to start work",
+            "Use /workspace to switch repos or reopen a recent workspace",
+            "Use /github to browse and clone from the connected GitHub account",
+            "Use /resume to continue a recent session",
+            "Use /setup to revisit providers or messaging integrations",
+        ],
+        title="Prompt-first actions",
+    )
+
+
+def _manual_workspace_path() -> Path | None:
+    raw = _prompt_text("Workspace path", allow_empty=True, default="")
+    if not raw:
+        return None
+    candidate = Path(raw).expanduser().resolve()
+    if not candidate.exists():
+        ui.error(f"Workspace path does not exist: {candidate}")
+        return None
+    remember_workspace(candidate)
+    return candidate
+
+
+def _interactive_github_clone() -> Path | None:
+    status = detect_github_status()
+    if not status.cli_available:
+        ui.warning(status.error or "GitHub CLI is unavailable.")
+        return None
+    if not status.authenticated:
+        ui.warning(status.error or "GitHub CLI is not connected.")
+        return None
+    repos = list_github_repos(limit=10)
+    if not repos:
+        ui.warning("No GitHub repos were returned for the current account.")
+        return None
+    selection = _prompt_choice(
+        "Choose a GitHub repo to clone",
+        [(f"{repo.name_with_owner} - {repo.description or repo.url}", repo.name_with_owner) for repo in repos],
+        default_index=1,
+    )
+    repo = repos[selection]
+    target = clone_github_repo(repo.name_with_owner)
+    remember_workspace(target)
+    ui.success(f"Cloned {repo.name_with_owner} into {target}")
+    return target
+
+
+def _interactive_workspace_switch(current_root: Path) -> Path:
+    candidates = _workspace_candidates(current_root)
+    options = [(f"{path} - {'active' if path.resolve() == current_root.resolve() else 'recent'}", str(path)) for path in candidates]
+    options.append(("Clone a repo from GitHub", "__github__"))
+    options.append(("Enter a workspace path manually", "__manual__"))
+    selection = _prompt_choice("Choose a workspace", options, default_index=1)
+    chosen = options[selection][1]
+    if chosen == "__github__":
+        return _interactive_github_clone() or current_root
+    if chosen == "__manual__":
+        return _manual_workspace_path() or current_root
+    target = Path(chosen).resolve()
+    remember_workspace(target)
+    ui.success(f"Active workspace set to {target}")
+    return target
+
+
+def _interactive_resume_flow(root: Path) -> None:
+    sessions = asyncio.run(_recent_sessions_for_root(root, limit=8))
+    if not sessions:
+        ui.info("No recent sessions were found for this workspace yet.")
+        return
+    options = [
+        (f"{item['id']} - {item.get('status', '?')} - {(item.get('user_request') or '')[:56]}", item["id"])
+        for item in sessions
+    ]
+    selected = _prompt_choice("Choose a session to resume", options, default_index=1)
+    session = sessions[selected]
+    ui.info(f"Selected session {session['id']}")
+    follow_up = _prompt_text("Follow-up request (leave empty to inspect only)", default="", allow_empty=True)
+    if not follow_up:
+        ui.info(f"Use `viki diff {session['id']} --path {root}` to inspect the last diff, or `viki status --session-id {session['id']}` for raw details.")
+        return
+    combined_prompt = (
+        f"Continue from VIKI session {session['id']}.\n"
+        f"Original request: {session.get('user_request') or 'unknown'}\n"
+        f"Follow-up request: {follow_up}"
+    )
+    _run_live_session(combined_prompt, root=root, mode=settings.default_run_mode, detach=False, background_child=False)
+
+
+def _interactive_diff_review(root: Path) -> None:
+    sessions = asyncio.run(_recent_sessions_for_root(root, limit=8))
+    if not sessions:
+        ui.info("No recent sessions were found for this workspace yet.")
+        return
+    options = [
+        (f"{item['id']} - {item.get('status', '?')} - {(item.get('user_request') or '')[:56]}", item["id"])
+        for item in sessions
+    ]
+    selected = _prompt_choice("Choose a session to review", options, default_index=1)
+    diff(options[selected][1], path=root, rendered=True)
+
+
 def _render_cli_header(
     title: str,
     *,
@@ -273,7 +518,7 @@ def _setup_provider_configuration() -> tuple[dict[str, str], dict[str, str]]:
     presets = list(iter_provider_presets())
     index = _prompt_choice(
         "Choose your default AI provider",
-        [(f"{preset.label} — {preset.description}", preset.slug) for preset in presets],
+        [(f"{preset.label} - {preset.description}", preset.slug) for preset in presets],
         default_index=1,
     )
     preset = presets[index]
@@ -283,7 +528,7 @@ def _setup_provider_configuration() -> tuple[dict[str, str], dict[str, str]]:
 
     profile_index = _prompt_choice(
         f"Choose a {preset.label} model profile",
-        [(f"{profile.label} — {profile.summary}", profile.slug) for profile in preset.model_profiles],
+        [(f"{profile.label} - {profile.summary}", profile.slug) for profile in preset.model_profiles],
         default_index=1,
     )
     profile = preset.model_profiles[profile_index]
@@ -369,8 +614,8 @@ def _setup_preferences() -> tuple[dict[str, str], list[tuple[str, str]]]:
     theme_index = _prompt_choice(
         "Choose the default terminal theme",
         [
-            ("Premium — dark-tech, polished interactive terminal UI", "premium"),
-            ("Contrast — stronger contrast for some terminals", "contrast"),
+            ("Premium - dark-tech, polished interactive terminal UI", "premium"),
+            ("Contrast - stronger contrast for some terminals", "contrast"),
         ],
         default_index=1,
     )
@@ -379,8 +624,8 @@ def _setup_preferences() -> tuple[dict[str, str], list[tuple[str, str]]]:
     approval_index = _prompt_choice(
         "Choose the default approval mode",
         [
-            ("Auto — only high-risk actions pause for approval", "auto"),
-            ("Strict — ask for approval more aggressively", "strict"),
+            ("Auto - only high-risk actions pause for approval", "auto"),
+            ("Strict - ask for approval more aggressively", "strict"),
         ],
         default_index=1 if settings.approval_mode != "strict" else 2,
     )
@@ -389,8 +634,8 @@ def _setup_preferences() -> tuple[dict[str, str], list[tuple[str, str]]]:
     mode_index = _prompt_choice(
         "Choose the default session style",
         [
-            ("Standard — balanced prompt-first workflow", "standard"),
-            ("Careful — label sessions as more review-oriented", "careful"),
+            ("Standard - balanced prompt-first workflow", "standard"),
+            ("Careful - label sessions as more review-oriented", "careful"),
         ],
         default_index=1 if settings.default_run_mode != "careful" else 2,
     )
@@ -410,6 +655,7 @@ def _setup_preferences() -> tuple[dict[str, str], list[tuple[str, str]]]:
 
 
 def _run_setup_wizard(root: Path, *, title: str = "Setup Wizard", continue_to_prompt: bool = False) -> dict[str, Any]:
+    remember_workspace(root)
     _render_cli_header(title, root=root, provider=LiteLLMProvider(), autonomy_mode="setup", validation_state="guided")
     ui.render_hint_strip(
         [
@@ -449,6 +695,7 @@ def _run_setup_wizard(root: Path, *, title: str = "Setup Wizard", continue_to_pr
 
 
 def _ensure_workspace_ready(root: Path) -> None:
+    remember_workspace(root)
     if (root / settings.workspace_dir).exists():
         return
     ui.warning("No VIKI workspace was found here, so VIKI is initializing this directory now.")
@@ -479,6 +726,7 @@ def _run_live_session(
     detach: bool = False,
     background_child: bool = False,
 ) -> None:
+    remember_workspace(root)
     _ensure_workspace_ready(root)
 
     if detach and not background_child:
@@ -547,50 +795,88 @@ def _run_live_session(
 
 
 def _launch_default_entry(root: Path) -> None:
-    state = onboarding_state(root)
-    provider = LiteLLMProvider()
-    _render_cli_header("Welcome", root=root, provider=provider, autonomy_mode=settings.default_run_mode, validation_state="ready")
-    ui.render_hint_strip(
-        [
-            "Ask VIKI to inspect, fix, refactor, or summarize code",
-            "Use `viki setup` to revisit providers, defaults, or messaging",
-            "Use `viki status`, `viki diff`, or `viki approvals` for session review",
-        ],
-        title="What you can do now",
-    )
+    root = _default_entry_root(root)
+    remember_workspace(root)
 
-    if not state["config_exists"] or not state["provider_ready"]:
-        ui.warning("Setup is incomplete, so VIKI will guide you through provider and messaging setup first.")
-        try:
-            _run_setup_wizard(root, continue_to_prompt=True)
-        except (EOFError, KeyboardInterrupt, ClickAbort):
-            ui.info("Run `viki setup` in an interactive terminal to complete onboarding.")
-            return
+    while True:
+        state = onboarding_state(root)
         provider = LiteLLMProvider()
-    elif not provider.validate_config():
-        provider = _interactive_setup_repair(root)
+        _render_home_screen(root, provider)
 
-    _ensure_workspace_ready(root)
-    _render_cli_header("Prompt-First Console", root=root, provider=provider, autonomy_mode=settings.default_run_mode, validation_state="ready")
-    ui.render_hint_strip(
-        [
-            "Examples: Fix the broken calculation and make tests pass",
-            "Refactor auth naming consistently and keep behavior green",
-            "Inspect this repo and summarize the next safe step",
-        ],
-        title="Prompt ideas",
-    )
+        if not state["config_exists"] or not state["provider_ready"]:
+            ui.warning("Setup is incomplete, so VIKI will guide you through provider and messaging setup first.")
+            try:
+                _run_setup_wizard(root, continue_to_prompt=True)
+            except (EOFError, KeyboardInterrupt, ClickAbort):
+                ui.info("Run `viki setup` in an interactive terminal to complete onboarding.")
+                return
+            continue
+        if not provider.validate_config():
+            provider = _interactive_setup_repair(root)
+            continue
 
-    try:
-        prompt = typer.prompt("viki>", default="", show_default=False).strip()
-    except (EOFError, KeyboardInterrupt, ClickAbort):
-        ui.info("VIKI is configured. Run `viki` again in an interactive terminal or use `viki run \"...\"`.")
+        _ensure_workspace_ready(root)
+        ui.render_hint_strip(
+            [
+                "Type a task directly to start coding",
+                "Use /workspace to switch repos or /github to clone from GitHub",
+                "Use /resume to continue a prior session, /approvals to review gates, or /diffs to inspect changes",
+            ],
+            title="Enter a task or command",
+        )
+
+        try:
+            prompt = typer.prompt("viki>", default="", show_default=False).strip()
+        except (EOFError, KeyboardInterrupt, ClickAbort):
+            ui.info("VIKI is configured. Run `viki` again in an interactive terminal or use `viki run \"...\"`.")
+            return
+
+        if not prompt:
+            ui.info("No task entered. Use `viki` again for the home screen or `viki run \"...\"` for a direct task.")
+            return
+
+        command = prompt.lower()
+        if command in {"/quit", "/exit"}:
+            ui.info("VIKI closed.")
+            return
+        if command == "/help":
+            ui.render_hint_strip(
+                [
+                    "/workspace - switch the active workspace",
+                    "/github - browse and clone from GitHub",
+                    "/resume - continue a recent session",
+                    "/approvals - review pending approval items",
+                    "/diffs - inspect recent session diffs",
+                    "/setup - revisit provider and messaging setup",
+                    "/status - review recent sessions",
+                    "Any other input starts a task in the active workspace",
+                ],
+                title="Home commands",
+            )
+            continue
+        if command == "/workspace":
+            root = _interactive_workspace_switch(root)
+            continue
+        if command == "/github":
+            root = _interactive_github_clone() or root
+            continue
+        if command == "/resume":
+            _interactive_resume_flow(root)
+            continue
+        if command == "/approvals":
+            approvals_list(path=root)
+            continue
+        if command in {"/diffs", "/diff"}:
+            _interactive_diff_review(root)
+            continue
+        if command == "/setup":
+            _run_setup_wizard(root, title="Setup Wizard", continue_to_prompt=True)
+            continue
+        if command == "/status":
+            status(path=root)
+            continue
+        _run_live_session(prompt, root=root, mode=settings.default_run_mode, detach=False, background_child=False)
         return
-
-    if not prompt:
-        ui.info("No task entered. Use `viki run \"...\"` or run `viki` again when you are ready.")
-        return
-    _run_live_session(prompt, root=root, mode=settings.default_run_mode, detach=False, background_child=False)
 
 
 def _db_for_root(root: Path) -> DatabaseManager:
@@ -812,6 +1098,11 @@ def version():
 
 
 @app.command()
+def home(path: Path = typer.Argument(Path("."), help="Workspace root or any directory inside the product shell")):
+    _launch_default_entry(_default_entry_root(path))
+
+
+@app.command()
 def run(
     prompt: str = typer.Argument(..., help="Task for VIKI"),
     mode: str = typer.Option(settings.default_run_mode, "--mode", "-m"),
@@ -821,6 +1112,131 @@ def run(
 ):
     root = _workspace_root(path)
     _run_live_session(prompt, root=root, mode=mode, detach=detach, background_child=background_child)
+
+
+@github_app.command("status")
+def github_status():
+    status = detect_github_status()
+    table = Table(title="GitHub Connection")
+    table.add_column("Field")
+    table.add_column("Value")
+    table.add_row("CLI", "available" if status.cli_available else "missing")
+    table.add_row("Connected", "yes" if status.authenticated else "no")
+    table.add_row("Account", status.account or "-")
+    table.add_row("Protocol", status.protocol or "-")
+    table.add_row("Scopes", status.scopes or "-")
+    if status.error:
+        table.add_row("Message", status.error)
+    ui.render_table(table)
+    if status.cli_available and not status.authenticated:
+        ui.info("Run `gh auth login` once, then use `viki github repos` or `/github` inside VIKI.")
+
+
+@github_app.command("repos")
+def github_repos(owner: Optional[str] = typer.Option(None, "--owner", help="GitHub owner or org"), limit: int = typer.Option(12, "--limit")):
+    repos = list_github_repos(owner=owner, limit=limit)
+    if not repos:
+        status = detect_github_status()
+        if not status.authenticated:
+            ui.warning("GitHub is not connected yet. Run `gh auth login`, then retry `viki github repos`.")
+        else:
+            ui.warning("No GitHub repos are available for the connected account or owner.")
+        raise typer.Exit(1)
+    table = Table(title="GitHub Repositories")
+    table.add_column("Repository")
+    table.add_column("Visibility")
+    table.add_column("Default branch")
+    table.add_column("Description")
+    for repo in repos:
+        table.add_row(
+            repo.name_with_owner,
+            "private" if repo.is_private else "public",
+            repo.default_branch or "-",
+            repo.description or "-",
+        )
+    ui.render_table(table)
+
+
+@github_app.command("clone")
+def github_clone(
+    repo: str = typer.Argument(..., help="GitHub repo in owner/name form"),
+    branch: Optional[str] = typer.Option(None, "--branch", help="Optional branch"),
+    destination: Optional[Path] = typer.Option(None, "--destination", help="Target workspace root"),
+):
+    target = clone_github_repo(repo, target_root=destination, branch=branch)
+    remember_workspace(target)
+    ui.success(f"Workspace ready at {target}")
+
+
+@workspaces_app.command("list")
+def workspaces_list():
+    state = recent_workspace_paths()
+    if not state:
+        ui.info("No recent workspaces yet. Run `viki` in a repo or use `viki github clone`.")
+        raise typer.Exit()
+    active = active_workspace_path()
+    table = Table(title="Recent Workspaces")
+    table.add_column("Workspace")
+    table.add_column("State")
+    for item in state:
+        table.add_row(str(item), "active" if active and item.resolve() == active.resolve() else "recent")
+    ui.render_table(table)
+
+
+@workspaces_app.command("use")
+def workspaces_use(path: Path = typer.Argument(..., help="Workspace to make active")):
+    root = path.resolve()
+    if not root.exists():
+        ui.error(f"Workspace does not exist: {root}")
+        raise typer.Exit(1)
+    set_active_workspace(root)
+    ui.success(f"Active workspace set to {root}")
+
+
+@sessions_app.command("list")
+def sessions_list(path: Path = typer.Argument(Path("."), help="Workspace root"), limit: int = typer.Option(10, "--limit")):
+    root = _workspace_root(path)
+
+    async def main():
+        sessions = await _recent_sessions_for_root(root, limit=limit)
+        table = Table(title="Recent Sessions")
+        table.add_column("Session")
+        table.add_column("Status")
+        table.add_column("Request")
+        for item in sessions:
+            table.add_row(item["id"], item.get("status", "?"), (item.get("user_request") or "")[:72])
+        ui.render_table(table)
+
+    asyncio.run(main())
+
+
+@sessions_app.command("continue")
+def sessions_continue(
+    session_id: str = typer.Argument(..., help="Session id to continue from"),
+    prompt: Optional[str] = typer.Option(None, "--prompt", help="Follow-up request"),
+    path: Path = typer.Option(Path("."), "--path", help="Workspace root"),
+):
+    root = _workspace_root(path)
+    db = _db_for_root(root)
+
+    async def main() -> dict[str, Any] | None:
+        await db.initialize()
+        return await db.get_session(session_id)
+
+    session = asyncio.run(main())
+    if not session:
+        ui.error(f"Session not found: {session_id}")
+        raise typer.Exit(1)
+    follow_up = prompt or _prompt_text("Follow-up request", allow_empty=True, default="")
+    if not follow_up:
+        ui.info(f"Selected session {session_id}. Use `viki diff {session_id} --path {root}` to inspect it.")
+        raise typer.Exit()
+    combined_prompt = (
+        f"Continue from VIKI session {session_id}.\n"
+        f"Original request: {session.get('user_request') or 'unknown'}\n"
+        f"Follow-up request: {follow_up}"
+    )
+    _run_live_session(combined_prompt, root=root, mode=settings.default_run_mode, detach=False, background_child=False)
 
 
 @app.command()

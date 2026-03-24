@@ -387,7 +387,7 @@ class TerminalUI:
         body = Text()
         for index, item in enumerate(items):
             if index:
-                body.append("  •  ", style="viki.accent_soft")
+                body.append("  |  ", style="viki.accent_soft")
             body.append(item, style="viki.text")
         self.console.print(
             Panel(
